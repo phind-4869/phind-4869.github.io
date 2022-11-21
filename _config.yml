@@ -48,7 +48,7 @@ social:
     # - https://www.facebook.com/username
     # - https://www.linkedin.com/in/username
 
-google_site_verification:                # 填入你的认证字符串
+google_site_verification:       # 填入你的认证字符串
 
 # ↑ --------------------------
 # `jekyll-seo-tag` 设置结束
@@ -62,11 +62,13 @@ google_site_verification:                # 填入你的认证字符串
 iconfont_css: 
   # 此 css 包含以 'icon-' 为前缀的图标，为模板的核心图标，请勿删除。
   - //at.alicdn.com/t/c/font_2440352_rnl2lfghq2.css
+  # 此 css 包含以 'icon-nihil-' 为前缀的图标，为我博客内容使用的图标，可删除。
+  - //at.alicdn.com/t/font_2451185_tgvgeuen2lh.css
   # 添加你的 Iconfont 图标链接
   # - 
 
 google_analytics:
-  id:              # 填入你的 Google Analytics ID
+  id: 'G-RK9LRGVP0T'              # 填入你的 Google Analytics ID
   # Google Analytics 页面浏览量设置
   pv:
     proxy_endpoint:   # 填入 Google App Engine 的 Google Analytics superProxy 端点
@@ -112,7 +114,7 @@ panel:
     toc: true
 
 comments:
-  active:     # 帖子评论区全局开关，例如，'disqus'。保持为空表示禁用
+  active: 'waline'  # 帖子评论区全局开关，例如，'disqus'。保持为空表示禁用
   # active 选项可以是如下：
   # disqus 评论系统 > https://disqus.com/
   disqus:
@@ -123,7 +125,7 @@ comments:
     issue_term:   # < 链接 | 路径 | 标题 | ...>
   # Waline 评论系统 › https://waline.js.org/
   waline:
-    server:       # Vercal 服务端地址
+    server: https://waline.nihil.cc/    # Vercal 服务端地址
     placeholder: 说点什么吧！    # 空白评论框时显示的文字
     avatar: mp          # 默认头像  › https://waline.js.org/guide/client/avatar.html
   # Giscus 选项 › https://giscus.app

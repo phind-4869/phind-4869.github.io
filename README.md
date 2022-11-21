@@ -1,10 +1,8 @@
-基于 [Chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) 主题定制化的个人博客，博客内容已转移到 `blog` 分支，`master` 将作为模板使用。[此处进入我的博客](https://nihil.cc/)。
+基于 [Chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) 主题定制化的个人博客，[点击此处进入](https://nihil.cc/)。
 
 [![996.icu](https://img.shields.io/badge/link-996.icu-red.svg)](https://996.icu)
 
-使用之前请先参考原版 Chirpy 的[使用教程](https://chirpy.cotes.page/posts/getting-started/)。
-
-与原版 Chirpy 不同的点在于：
+与原版 Chirpy 不同的点：
 
 * 在原版支持的评论系统 [Disqus](https://disqus.com/)，[Utterances](https://utteranc.es/) 和 [Giscus](https://giscus.app/zh-CN) 外，增加对 [Waline](https://waline.js.org/) 评论系统的支持，参见 `_config.yml` 里的 `comments.waline`。
 * 使用[知乎式 404 界面](https://404.life/564.html)，可以返回首页或者返回上一页。
@@ -37,5 +35,7 @@
     | JavaScript | `run="javascript"` | N/A (本地) |
     | Python | `run="python"` | [Online Python](https://www.online-python.com/) |
     | Rust | `run="rust"` | [Rust Playground](https://play.rust-lang.org/) |
+
+如果喜欢我这个定制化的版本，欢迎 Fork，但是请修改 `_config.yml` 中 `google_analytics` 的 `id`， `waline` 的 `server`，以及 `CNAME` 文件中配置的域名，请勿使用我的配置。
 
 通常，每周会至少 merge 一次 [`upstream/master`](https://github.com/cotes2020/jekyll-theme-chirpy) 以追踪新的功能。

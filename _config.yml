@@ -87,7 +87,9 @@ google_analytics:
 theme_mode:   # [light|dark]
 
 # 图像 CDN 端点。
-# 注意一旦被分配，CDN 网址会被加在所有图像（网站头像和帖子图像）路径上。
+# 注意一旦被分配，CDN 网址会被加在
+# 所有以 '/' 开始的图像（网站头像和帖子中的图像）路径上
+# 
 # 例如，'https://cdn.com'
 img_cdn: ''
 

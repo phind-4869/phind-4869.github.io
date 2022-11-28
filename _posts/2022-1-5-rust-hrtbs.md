@@ -1,7 +1,7 @@
 ---
 title: 从实例看 Rust 的 HRTBs
 date: 2022-1-5 10:14:38 +0800
-categories: [杂记 , Rust]
+categories: [编程 , Rust]
 tags: [rust, 编程语言]     # TAG names should always be lowercase
 ---
 

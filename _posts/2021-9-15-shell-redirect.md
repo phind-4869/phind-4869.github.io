@@ -1,8 +1,8 @@
 ---
 title: Shell 中的管道、重定向、进程替换
 date: 2021-9-15 14:51:44 +0800
-categories: [杂记 , Linux]
-tags: [linux, shell]     # TAG names should always be lowercase
+categories: [教程, Shell]
+tags: [linux, shell, 教程]     # TAG names should always be lowercase
 ---
 
 ## 管道

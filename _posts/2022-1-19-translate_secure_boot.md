@@ -1,7 +1,7 @@
 ---
 title: "[译] 安全引导与镜像验证技术概览"
 date: 2022-1-19 17:21:27 +0800
-categories: [翻译, "[译]Android"]
+categories: [翻译, "Android"]
 tags: [android, 翻译, 高通]     # TAG names should always be lowercase
 license: false
 ---

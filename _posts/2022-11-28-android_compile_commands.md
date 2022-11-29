@@ -1,8 +1,8 @@
 ---
 title: "Android C++ 生成 compile_commands.json"
 date: 2022-11-28 17:10:12 +0800
-categories: [编程, Android]
-tags: [c++, android, 编程语言]     # TAG names should always be lowercase
+categories: [教程, Android]
+tags: [c++, android, 教程]     # TAG names should always be lowercase
 ---
 
 ## Android C++ 程序开发现状

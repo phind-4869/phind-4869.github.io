@@ -1,7 +1,7 @@
 ---
 title: "高通平台自定义按键进入 fastboot/recovery/edl 模式"
 date: 2022-5-16 18:24:14 +0800
-categories: [编程, Android]
+categories: [教程, Android]
 tags: [android, qualcomm]     # TAG names should always be lowercase
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: "[译] 并不总是 iCache"
 date: 2022-2-17 15:13:27 +0800
-categories: [翻译, "[译]Rust"]
+categories: [翻译, "Rust"]
 tags: [rust, 翻译]     # TAG names should always be lowercase
 license: false
 ---

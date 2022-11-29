@@ -1,7 +1,7 @@
 ---
 title: Rust 中函数与闭包与 Fn Traits 探讨
 date: 2021-4-24 20:31:52 +0800
-categories: [编程 , Rust]
+categories: [教程 , Rust]
 tags: [rust, 闭包, 编程语言, 教程]     # TAG names should always be lowercase
 ---
 

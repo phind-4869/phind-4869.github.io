@@ -1,7 +1,7 @@
 ---
 title: "[译] Rust 中的内联"
 date: 2022-2-16 9:58:35 +0800
-categories: [翻译, "[译]Rust"]
+categories: [翻译, "Rust"]
 tags: [rust, 翻译]     # TAG names should always be lowercase
 license: false
 ---

@@ -36,6 +36,6 @@
     | Python | `run="python"` | [Online Python](https://www.online-python.com/) |
     | Rust | `run="rust"` | [Rust Playground](https://play.rust-lang.org/) |
 
-如果喜欢我这个定制化的版本，欢迎 Fork，但是请修改 `_config.yml` 中 `google_analytics` 的 `id`， `waline` 的 `server`，以及 `CNAME` 文件中配置的域名，请勿使用我的配置。
+* (2022-11-29) 支持多级 categories，如果你是从旧版本更新到当前版本，请在本地运行 `bundle update`。原版 Chirpy 使用 `jekyll-archives` 插件生成 categories，该插件将所有 categories 视为同等级别关系，这导致在 Chirpy 中无法使用相同名字的二级 category。由于将 `jekyll-archives` 下载到本地 `.gems` 目录，并且将 `Gemfile` 指向本地路径，因此本地需要 `bundle update` 之后才能生效。
 
 通常，每周会至少 merge 一次 [`upstream/master`](https://github.com/cotes2020/jekyll-theme-chirpy) 以追踪新的功能。

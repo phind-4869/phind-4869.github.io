@@ -19,16 +19,16 @@ Ruby 脚本在生成站点时静态地添加高亮块，没有运行时时间成
 
 1. 通过 Kramdown 的语法为代码框增加属性：
 
-    ````markdown
-    ```c
-    int main(int argc, char* argv[]) {
-        return 0;
-    }
-    ```
-    {: highlight-lines="2" }
-    ````
+   ````markdown
+   ```c
+   int main(int argc, char* argv[]) {
+      return 0;
+   }
+   ```
+   {: highlight-lines="2" }
+   ````
 
-    `highlight-lines` 支持复数行的选择，例如 `highlight-lines="2-4, 7, 9-16, 21"`。
+   `highlight-lines` 支持复数行的选择，例如 `highlight-lines="2-4, 7, 9-16, 21"`。
 
 2. 在 JS 中，通过正则匹配，将 `highlight-lines` 的值拆为具体的行数，例如将 `"2-4, 7, 9-16, 21"` 拆成 `[2, 3, 4, 7, 9, 10, 11, 12, 13, 14, 15, 16, 21]`。
 3. 遍历所有 `$(".highlighter-rouge")`{:.language-javascript}，找到每个代码块内的最后一个 `<pre>`{:.language-html} 子元素（因为行号也是一个 `<pre>`{:.language-html}，要排除行号的影响）。

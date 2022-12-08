@@ -20,18 +20,29 @@ tags: [c++, android, 教程]     # TAG names should always be lowercase
 但是深入了解 Android 之后，我发现其实 Android 内置有 [compdb](https://android.googlesource.com/platform/build/soong/+/HEAD/docs/compdb.md) 可以用来生成 `compile_commands.json`，流程上只需要设置几个环境变量即可：
 
 ```bash
-cd /path/to/android/root
+cd /path/to/android/root    # Android 源码根路径
 source build/envsetup.sh
 lunch xxxx-userdebug
+cd /path/to/app/dir         # 项目 Android.mk/Android.bp 所在目录
 export SOONG_GEN_COMPDB=1
 export SOONG_GEN_COMPDB_DEBUG=1
-export SOONG_LINK_COMPDB_TO=/path/to/app/dir
-cd /path/to/app/dir
+export SOONG_LINK_COMPDB_TO=$(pwd)
 mm
 ```
-{: highlight-lines="4-6" }
+{: highlight-lines="5-7" }
 
-等待一段时间后，就会在 `/path/to/app/dir` 目录下看到生成好的 `compile_commands.json` 了。不过通常这个文件大的离谱，我这边生成的有 300 MB，这样如果直接给插件用的话，会导致加载时间过长。因此，我们需要对该文件进行一些裁剪。
+等待一段时间后，就会在 `/path/to/app/dir` 目录下看到生成好的 `compile_commands.json` 了。需要注意的是，有些平台似乎不接受 `SOONG_LINK_COMPDB_TO`，不管怎么设置都固定生成在 Android 源码根目录，所以如果你在项目目录找不到该文件或者该文件无效，就去 Android 根目录看看。
+
+如果还是没有 `compile_commands.json`，我们也可以借助 `ninja` 来生成，建议使用 Github 上最新的 `ninja`，否则可能会生成空文件：
+
+```bash
+cd /path/to/android/root    # Android 源码根路径
+ninja -f out/combined-kona.ninja -t compdb | tee ./compile_commands.json
+```
+
+注意此处 `combined-xxx.ninja` 文件叫什么名字取决于你所使用的平台。
+
+通常这个文件大的离谱，我这边生成的有 300 MB，这样如果直接给插件用的话，会导致加载时间过长。因此，我们需要对该文件进行一些裁剪。
 
 我们先备份原本的 `compile_commands.json`，然后创建一个新的 `compile_commands.json` 文件。该文件的基本格式是：
 
@@ -50,7 +61,11 @@ mm
 ]
 ```
 
-我们需要关注 `file` 字段，这里指示了每个参与编译的 `cpp` 文件。我们在原本的 `compile_commands.json` 中搜索我们关心的 `cpp` 文件，然后将它们的 `directory`、`arguments`、`file` 字段复制到上面的模板中，最后配置好对应插件即可，例如对于 vscode，我们需要在 `.vscode/c_cpp_properties.json` 中添加下面高亮行的内容：
+如果是 `ninja` 生成的 `compile_commands.json`，格式会有些许不同，它会用 `command` 字段替换掉 `arguments` 字段，二者都是有效的，都可以被 vscode/YouCompleteMe 等识别。
+
+我们需要关注 `file` 字段，这里指示了每个参与编译的 `cpp` 文件。我们在原本的 `compile_commands.json` 中搜索我们关心的 `cpp` 文件，然后将它们的 `directory`、`arguments`（或 `command`）、`file` 字段依次复制到上面的模板中，最后配置好对应插件即可。
+
+例如对于 vscode，我们需要在 `.vscode/c_cpp_properties.json` 中添加下面高亮行的内容：
 
 ```json
 {

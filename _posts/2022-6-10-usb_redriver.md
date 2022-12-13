@@ -247,11 +247,79 @@ err_exit:
         on ? "ENABLE":"DISABLE", val);
 }
 ```
-{: highlight-lines="10-29, 41-53" }
 
-需要注意第一段黄色背景的代码段，我们可以看到，它在检测到方向为 CC1 时，打开了 C/D 通道，检测到方向为 CC2 时，打开了 A/B 通道，也就是说驱动默认你将 Type-C 的 TX1/RX1 接在 C/D 通道，而 TX2/RX2 接在 A/B 通道。实际上，这四个通道是完全等效的，你可以将四组差分线随意的连接到任意通道组合上，只需要修改上述黄色背景中的代码段，让驱动打开正确的通道即可。
+注意下面这段代码：
 
-再看到第二段黄色背景的代码段，这一段常用在眼镜类的产品上，将 Type-C 的四组通道拆分，两组供给 USB 3.1 使用，另外两组供给 DP 使用，因此我们可以看到代码中将 A/B/C/D 四个通道都打开了。另一方面，对于 CC1/CC2，驱动还设置了一个 `OP_MODE`，结合第一段黄色背景的代码段，我们可以猜测，设置 `(0x1 << OP_MODE_SHIFT)`{: .language-cpp } 意味着将 C/D 通道配置为 USB 3.1，A/B 通道配置为 DP；反过来说，设置 `(0x0 << OP_MODE_SHIFT)`{: .language-cpp } 可以猜测是将 A/B 通道配置为 USB 3.1，C/D 通道配置为 DP；在第一段黄色背景中配置为 `(0x5 << OP_MODE_SHIFT)`{: .language-cpp }，由于这个模式下只有 USB，可推测该值为四通道 USB；最后，在二者中间的 `OP_MODE_DP` 模式下，仅有 DP，因此可推测 `(0x2 << OP_MODE_SHIFT)`{: .language-cpp } 是四通道 DP 模式。
+```cpp
+    case OP_MODE_USB:
+        /* Use source side I/O mapping */
+        if (redriver->typec_orientation
+                == ORIENTATION_CC1) {
+            /* Enable channel C and D */
+            val &= ~(CHNA_EN | CHNB_EN);
+            val |= (CHNC_EN | CHND_EN);
+        } else if (redriver->typec_orientation
+                == ORIENTATION_CC2) {
+            /* Enable channel A and B*/
+            val |= (CHNA_EN | CHNB_EN);
+            val &= ~(CHNC_EN | CHND_EN);
+        } else {
+            /* Enable channel A, B, C and D */
+            val |= (CHNA_EN | CHNB_EN);
+            val |= (CHNC_EN | CHND_EN);
+        }
+
+        /* Set to default USB Mode */
+        val |= (0x5 << OP_MODE_SHIFT);
+
+        break;
+```
+
+这一段代码是仅 USB 模式下的寄存器配置。我们可以看到，它在检测到方向为 CC1 时，打开了 C/D 通道，检测到方向为 CC2 时，打开了 A/B 通道，也就是说驱动默认你将 Type-C 的 TX1/RX1 接在 C/D 通道，而 TX2/RX2 接在 A/B 通道。通常来说，**建议硬件上将 A/B/C/D 四个通道分别连接到 RX1/TX1/TX2/RX2**，因为这是这颗芯片的默认配置，哪怕芯片驱动出现异常，也能保证 USB 3.0 能够正常工作。注意到有配置 `(0x5 << OP_MODE_SHIFT)`{: .language-cpp }，由于这个模式下只有 USB，可推测该值对应的模式为四通道 USB。
+
+再看到这一段代码：
+
+```cpp
+    case OP_MODE_USB_AND_DP:
+        /* Enable channel A, B, C and D */
+        val |= (CHNA_EN | CHNB_EN);
+        val |= (CHNC_EN | CHND_EN);
+
+        if (redriver->typec_orientation
+                == ORIENTATION_CC1)
+            /* Set to DP 4 Lane Mode (OP Mode 1) */
+            val |= (0x1 << OP_MODE_SHIFT);
+        else if (redriver->typec_orientation
+                == ORIENTATION_CC2)
+            /* Set to DP 4 Lane Mode (OP Mode 0) */
+            val |= (0x0 << OP_MODE_SHIFT);
+        else {
+            dev_err(redriver->dev,
+                "can't get orientation, op mode %d\n",
+                redriver->op_mode);
+            goto err_exit;
+        }
+
+        break;
+```
+
+这一段常用在眼镜类的产品上，将 Type-C 的四组通道拆分，两组供给 USB 3.1 使用，另外两组供给 DP 使用，因此我们可以看到代码中将 A/B/C/D 四个通道都打开了。另一方面，对于 CC1/CC2，驱动还配置了不同的 `OP_MODE`，我们可以猜测，设置 `(0x1 << OP_MODE_SHIFT)`{: .language-cpp } 意味着将 C/D 通道配置为 USB 3.1，A/B 通道配置为 DP；反过来说，设置 `(0x0 << OP_MODE_SHIFT)`{: .language-cpp } 可以猜测是将 A/B 通道配置为 USB 3.1，C/D 通道配置为 DP。
+
+最后看到中间这段代码：
+
+```cpp
+    case OP_MODE_DP:
+        /* Enable channel A, B, C and D */
+        val |= (CHNA_EN | CHNB_EN);
+        val |= (CHNC_EN | CHND_EN);
+
+        /* Set to DP 4 Lane Mode (OP Mode 2) */
+        val |= (0x2 << OP_MODE_SHIFT);
+
+        break;
+```
+
+由于该模式仅有 DP，因此可推测 `(0x2 << OP_MODE_SHIFT)`{: .language-cpp } 是四通道 DP 模式。
 
 ## 参考
 

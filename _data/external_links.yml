@@ -10,8 +10,12 @@
   icon: icon-nihil-github
   use_iconfont: true
   name: 此博客的 Github 仓库
-  automatic_name: false
   link: https://github.com/NichtsHsu/nichtshsu.github.io
+-
+  icon: icon-nihil-blog
+  use_iconfont: true
+  name: Olimi 的个人博客
+  link: https://olimi.icu/
 # 在下面添加更多外部链接
 # -
 #   icon: 

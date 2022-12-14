@@ -141,12 +141,12 @@
   transform: translateX(-50%);
 }
 
-@mixin prompt($type, $fw-icon, $icon-weight: 400) {
+@mixin prompt($type, $iconfont-content, $icon-weight: 400) {
   &.prompt-#{$type} {
     background-color: var(--prompt-#{$type}-bg);
 
     &::before {
-      content: $fw-icon;
+      content: $iconfont-content;
       color: var(--prompt-#{$type}-icon-color);
       font-weight: $icon-weight;
     }

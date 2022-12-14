@@ -126,6 +126,10 @@ class CursorSpecialEffects {
 
     window.addEventListener('mousedown', this.handleMouseDown.bind(this))
     window.addEventListener('pagehide', this.handlePageHide.bind(this))
+    addEventListener("resize", (event) => {
+      this.renderCanvas.style.width = this.renderCanvas.width = this.computerCanvas.width = this.globalWidth = window.innerWidth
+      this.renderCanvas.style.height = this.renderCanvas.height = this.computerCanvas.height = this.globalHeight = window.innerHeight
+    });
   }
 
   run() {

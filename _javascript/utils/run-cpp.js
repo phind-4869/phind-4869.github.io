@@ -63,7 +63,7 @@ $(function () {
         }
 
         let params = {
-            cmd: "g++ main.cpp && ./a.out",
+            cmd: "g++ -std=c++20 main.cpp && ./a.out",
             src: text
         };
 

@@ -85,7 +85,7 @@ int main() { print(12); }
 
 代码中定义了一个新的概念 `Addable`，并且使用 `Addable` 概念与标准库概念 `std::integral`{:.language-cpp} 分别实现了一个 `print` 的重载，对于 `print(12)`{:.language-cpp} 而言，`12`{:.language-cpp} 既满足 `Addable` 也满足 `std::integral`{:.language-cpp}，这两种重载对于编译器而言是同等优先级的，因此编译器无法在其中择出一个最优实现。
 
-想要解决这个问题也很简单，只需要引入 `!` 来令两种重载互斥即可，例如在第二个重载中增加 `!std::integral<T>`{:.language-cpp}：
+想要解决这个问题也很简单，只需要引入 `!`{:.language-cpp} 来令两种重载互斥即可，例如在第二个重载中增加 `!std::integral<T>`{:.language-cpp}：
 
 ```cpp
 #include <concepts>
@@ -149,7 +149,7 @@ int main() {
 
 ### 那么析取？
 
-Concept 想要引入包含关系，除了合取语法之外还有析取语法。不过与合取相反的是，合取是 `A && B` 包含 `A`，但是析取是 `A` 包含 `A || B`。
+Concept 想要引入包含关系，除了合取语法之外还有析取语法。不过与合取相反的是，合取是 `A && B`{:.language-cpp} 包含 `A`，但是析取是 `A` 包含 `A || B`{:.language-cpp}。
 
 下面的代码可以佐证这一点：
 
@@ -165,21 +165,21 @@ concept IntOrAddable = std::integral<T> || Addable<T>;
 
 template <std::integral T>
 void print(const T &a) {
-  std::cout << "integral" << std::endl;
+    std::cout << "integral" << std::endl;
 }
 
 template <IntOrAddable T>
 void print(const T &a) {
-  std::cout << "IntOrAddable" << std::endl;
+    std::cout << "IntOrAddable" << std::endl;
 }
 
 int main() {
-  // 选择 std::integral 重载版本
-  print(12);
+    // 选择 std::integral 重载版本
+    print(12);
 }
 ```
 {: run="cpp" highlight-lines="7-8"}
 
 ### 结论
 
-对于任意两个没有关联的概念 `A` 和 `B`，在重载决议时的优先级为：`A && B` > `A` == `B` > `A || B`。
+对于任意两个没有关联的概念 `A` 和 `B`，在重载决议时的优先级为：`A && B`{:.language-cpp} > `A` == `B` > `A || B`{:.language-cpp}。

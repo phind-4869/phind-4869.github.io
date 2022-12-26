@@ -14,3 +14,17 @@
   type: rss
   icon: 'iconfont icon-rss'
   noblank: true
+
+# Uncomment and complete the url below to enable more contact options
+# -
+#   type: mastodon
+#   icon: 'iconfont icon-mastodon'   # icons powered by <https://fontawesome.com/>
+#   url:  ''                  # Fill with your Mastodon account page, rel="me" will be applied for verification
+# -
+#   type: linkedin
+#   icon: 'iconfont icon-linkedin'   # icons powered by <https://fontawesome.com/>
+#   url:  ''                  # Fill with your Linkedin homepage
+# -
+#   type: stack-overflow
+#   icon: 'iconfont icon-stack-overflow'
+#   url:  ''                  # Fill with your stackoverflow homepage

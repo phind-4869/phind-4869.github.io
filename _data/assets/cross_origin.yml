@@ -60,3 +60,27 @@ polyfill:
 
 mathjax:
   js: https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js
+
+firacode:
+  css: https://cdn.jsdelivr.net/npm/firacode@6.2.0/distr/fira_code.css
+
+socket-io-client:
+  js: https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.min.js
+
+waline:
+  js: https://cdn.jsdelivr.net/npm/@waline/client@2/dist/waline.js
+  css: https://cdn.jsdelivr.net/npm/@waline/client@2/dist/waline.css
+  emojis: https://cdn.jsdelivr.net/npm/@waline/emojis@1.2.0
+
+# 自定义 Iconfont 的图标链接。 › https://www.iconfont.cn/
+# 需要添加自己的 Iconfont 图标，请在 Iconfont 中新建项目，
+# 加入图标到项目，选择 Font Class，查看在线链接，并将其拷贝到下面。
+#
+# 注意：请不要与项目原本使用的图标重名，请全局搜索以确保该名称没被使用。
+# 一个比较好的办法是修改 Iconfont 项目的 FontClass/Symbol 前缀为其他值。
+iconfont:
+  css:
+    # 此 css 包含以 'icon-' 为前缀的图标，为模板的核心图标，请勿删除。
+    - //at.alicdn.com/t/c/font_2440352_flilaejlkj.css
+    # 添加你的 Iconfont 图标链接
+    - //at.alicdn.com/t/c/font_2451185_7mvlqrl19lq.css

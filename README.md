@@ -7,7 +7,7 @@
 * 在原版支持的评论系统 [Disqus](https://disqus.com/)，[Utterances](https://utteranc.es/) 和 [Giscus](https://giscus.app/zh-CN) 外，增加对 [Waline](https://waline.js.org/) 评论系统的支持，参见 `_config.yml` 里的 `comments.waline`。
 * 使用[知乎式 404 界面](https://404.life/564.html)，可以返回首页或者返回上一页。
 * 新增了分享到 Line，QQ，QQ 空间和微博，参见 `_data/share.yml`。
-* 使用 [iconfont](https://www.iconfont.cn/) 取代 [Font Awesome](https://fontawesome.com/)，有更多的图标选择空间，参见 `_config.yml` 里的 `iconfont_css`。
+* 使用 [iconfont](https://www.iconfont.cn/) 取代 [Font Awesome](https://fontawesome.com/)，有更多的图标选择空间。注意：自 2022-12-29 起，iconfont 路径配置从 `_config.yml` 迁移到了 `_data/assets/cross_origin.yml` 及 `_data/assets/self_host.yml` 中的 `iconfont.css`，以支持下载 css 到本地。
 * 右侧边栏添加了外部链接块，参见 `_data/external_links.yml`。
 * 可以自由地控制在帖子中显示右侧边栏哪些块。参见 `_config.yml` 里的 `panel`。
 * 添加了子域页。参见 `_data/subdomain.yml`。不需要该页面的情况下删除 `_tabs/subdomain.md` 即可。

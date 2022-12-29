@@ -14,14 +14,6 @@
 
   {% endif %}
 
-  {% if page.layout == 'post' %}
-  {% if site.comments == 'valine' and page.comments == true %}
-  <div id="gbk_nick"></div>
-  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
-  <script src="https://cdn1.lncld.net/static/js/3.4.2/av-min.js"></script>
-  {% endif %}
-  {% endif %}
-
   {% capture seo_tags %}
     {% seo title=false %}
   {% endcapture %}
@@ -101,14 +93,14 @@
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
 
   <!-- icon font -->
-  {% if site.iconfont_css %}
-  {% for css in site.iconfont_css %}
-  <link rel="stylesheet" href="{{ css }}">
+  {% if site.data.assets[origin].iconfont.css %}
+  {% for css in site.data.assets[origin].iconfont.css %}
+  <link rel="stylesheet" href="{{ css | relative_url }}">
   {% endfor %}
   {% endif %}
   
   <!-- Fira Code -->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/tonsky/FiraCode@5.2/distr/fira_code.css">
+  <link rel="stylesheet" href="{{ site.data.assets[origin].firacode.css | relative_url }}">
 
   {% if site.panel.post.toc and page.toc %}
     <link rel="stylesheet" href="{{ site.data.assets[origin].bootstrap-toc.css | relative_url }}">
@@ -122,7 +114,7 @@
   <!-- JavaScript -->
 
   <script src="{{ site.data.assets[origin].jquery.js | relative_url }}"></script>
-  <script async src="//cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.min.js"></script>
+  <script async src="{{ site.data.assets[origin].socket-io-client.js | relative_url }}"></script>
 
   {% if site.mouse_click_effect %}
     <script async src="/assets/js/lib/fireworks.js"></script>

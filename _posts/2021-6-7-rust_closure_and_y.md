@@ -571,7 +571,7 @@ fn main() {
 
 ## 非 Y 组合子的递归实现
 
-在参考文献[如何在Rust中写Y组合子？ - Nugine的回答 - 知乎](https://www.zhihu.com/question/266186457/answer/1062284485){:target="_blank"}中，作者在最后给出了一种特别的 “Y 组合子”：
+在参考文献[如何在Rust中写Y组合子？ - Nugine的回答 - 知乎](https://www.zhihu.com/question/266186457/answer/1062284485)中，作者在最后给出了一种特别的 “Y 组合子”：
 
 ```rust
 fn y<'a, A, O>(f: impl Fn(&dyn Fn(A) -> O, A) -> O + 'a) -> impl Fn(A) -> O + 'a {
@@ -653,6 +653,6 @@ fn main() {
 
 ## 参考
 
-[如何在Rust中写Y组合子？ - Nugine的回答 - 知乎](https://www.zhihu.com/question/266186457/answer/1062284485){:target="_blank"}
+[如何在Rust中写Y组合子？ - Nugine的回答 - 知乎](https://www.zhihu.com/question/266186457/answer/1062284485)
 
-[Lambda calculus - Wikipedia](https://en.wikipedia.org/wiki/Lambda_calculus){:target="_blank"}
+[Lambda calculus - Wikipedia](https://en.wikipedia.org/wiki/Lambda_calculus)

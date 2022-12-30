@@ -21,7 +21,7 @@ NB7VPQ904M 是一颗由 *onsemi* 的子公司 *Semiconductor Components Industri
 
 ## Pinout
 
-NB7VPQ904M 没有公开其规格书，在网络上的资料几乎没有。不过我们仍然可以在[大大通](https://www.wpgdadatong.com/){: target="_blank" }这个网站上找到一份[有关 NB7VPQ904M 的硬件原理图](https://www.wpgdadatong.com/cn/solution/detail?PID=7087){: target="_blank" }：
+NB7VPQ904M 没有公开其规格书，在网络上的资料几乎没有。不过我们仍然可以在[大大通](https://www.wpgdadatong.com/)这个网站上找到一份[有关 NB7VPQ904M 的硬件原理图](https://www.wpgdadatong.com/cn/solution/detail?PID=7087)：
 
 ![NB7VPQ904M](/assets/img/usb_redriver/nb7vpq904m.png)
 
@@ -35,7 +35,7 @@ NB7VPQ904M 没有公开其规格书，在网络上的资料几乎没有。不过
 
 ## 驱动
 
-NB7VPQ904M 几乎是高通平台的御用 redriver，你可以在几乎任何高通平台的源代码中找到一个名为 `ssusb-redriver-nb7vpq904m.c` 的驱动。这里以 Realme 的开源仓库为例，该驱动文件的 Github 链接可以[在此处找到](https://github.com/realme-kernel-opensource/realme5-kernel-source/blob/master/drivers/usb/misc/ssusb-redriver-nb7vpq904m.c){: target="_blank" }，其设备树配置可以参考[同仓库中的 sm8150-qrd.dtsi 文件](https://github.com/realme-kernel-opensource/realme5-kernel-source/blob/9f3bb6686925d092e899c49ffcd520899ca86a55/arch/arm64/boot/dts/qcom/sm8150-qrd.dtsi#L202-L226){: target="_blank" }。本文中所有的源代码都出自 Realme 开源仓库。
+NB7VPQ904M 几乎是高通平台的御用 redriver，你可以在几乎任何高通平台的源代码中找到一个名为 `ssusb-redriver-nb7vpq904m.c` 的驱动。这里以 Realme 的开源仓库为例，该驱动文件的 Github 链接可以[在此处找到](https://github.com/realme-kernel-opensource/realme5-kernel-source/blob/master/drivers/usb/misc/ssusb-redriver-nb7vpq904m.c)，其设备树配置可以参考[同仓库中的 sm8150-qrd.dtsi 文件](https://github.com/realme-kernel-opensource/realme5-kernel-source/blob/9f3bb6686925d092e899c49ffcd520899ca86a55/arch/arm64/boot/dts/qcom/sm8150-qrd.dtsi#L202-L226)。本文中所有的源代码都出自 Realme 开源仓库。
 
 首先我们看到设备树中的 `extcon` 属性：
 
@@ -323,6 +323,6 @@ err_exit:
 
 ## 参考
 
-[Differences between linear and limiting redrivers - David Liu, Malik Barton](https://training.ti.com/ti-precision-labs-signal-conditioning-what-difference-between-linear-and-limited-redriver){: target="_blank" }
+[Differences between linear and limiting redrivers - David Liu, Malik Barton](https://training.ti.com/ti-precision-labs-signal-conditioning-what-difference-between-linear-and-limited-redriver)
 
-[基于onsemi NB7VPQ904M的5M高速TYPE-C CABLE线的设计方案](https://www.wpgdadatong.com/cn/solution/detail?PID=7087){: target="_blank" }
+[基于onsemi NB7VPQ904M的5M高速TYPE-C CABLE线的设计方案](https://www.wpgdadatong.com/cn/solution/detail?PID=7087)

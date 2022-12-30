@@ -138,10 +138,10 @@ GRUB_DISABLE_OS_PROBER=false
 
 ## 参考
 
-[manjaro + win10 双系统修复 grub 的艰辛过程](https://zhuanlan.zhihu.com/p/155981949){:target="_blank"}
+[manjaro + win10 双系统修复 grub 的艰辛过程](https://zhuanlan.zhihu.com/p/155981949)
 
-[使用 Live CD 修复 UEFI 模式下 Manjaro Linux 启动问题](https://ld246.com/article/1577419136203){:target="_blank"}
+[使用 Live CD 修复 UEFI 模式下 Manjaro Linux 启动问题](https://ld246.com/article/1577419136203)
 
-[mount dev, proc, sys in a chroot environment?](https://superuser.com/questions/165116/mount-dev-proc-sys-in-a-chroot-environment){:target="_blank"}
+[mount dev, proc, sys in a chroot environment?](https://superuser.com/questions/165116/mount-dev-proc-sys-in-a-chroot-environment)
 
-[Chroot (简体中文)](https://wiki.archlinux.org/index.php/Chroot_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)){:target="_blank"}
+[Chroot (简体中文)](https://wiki.archlinux.org/index.php/Chroot_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87))

@@ -32,7 +32,7 @@ command > output_file
 
 将 `command` 的输出保存在文件 `output_file` 中而不是输出到终端。若文件不存在则创建该文件，若文件已有内容则覆盖原有内容。
 
-例如，[在 Ubuntu 通过命令行安装 vscode 时](https://code.visualstudio.com/docs/setup/linux){:target="_blank"}，就需要你执行这样一条命令：
+例如，[在 Ubuntu 通过命令行安装 vscode 时](https://code.visualstudio.com/docs/setup/linux)，就需要你执行这样一条命令：
 
 ```sh
 echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list
@@ -284,10 +284,10 @@ zsh 还额外提供了 `=(command)`{:.language-sh} 语法，该语法几乎和 `
 
 ## 参考
 
-[Redirections (Bash Reference Manual) - GNU.org](https://www.gnu.org/software/bash/manual/html_node/Redirections.html){:target="_blank"}
+[Redirections (Bash Reference Manual) - GNU.org](https://www.gnu.org/software/bash/manual/html_node/Redirections.html)
 
-[Process Substitution (Bash Reference Manual) - GNU.org](https://www.gnu.org/software/bash/manual/html_node/Process-Substitution.html){:target="_blank"}
+[Process Substitution (Bash Reference Manual) - GNU.org](https://www.gnu.org/software/bash/manual/html_node/Process-Substitution.html)
 
-[Opening the file descriptors for reading and writing](https://bash.cyberciti.biz/guide/Opening_the_file_descriptors_for_reading_and_writing){:target="_blank"}
+[Opening the file descriptors for reading and writing](https://bash.cyberciti.biz/guide/Opening_the_file_descriptors_for_reading_and_writing)
 
-[Shell Tips: tip1](http://linux-ip.net/misc/madlug/shell-tips/tip-1.txt){:target="_blank"}
+[Shell Tips: tip1](http://linux-ip.net/misc/madlug/shell-tips/tip-1.txt)

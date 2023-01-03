@@ -83,22 +83,22 @@ $(function () {
         socket = io(host, options);
         socket.emit('code', contents, "", "main.py");
 
-         socket.on('exit', function (data, code) {
+        socket.on('exit', function (data, code) {
             unlock(btn);
-         })
-         socket.on('output', function (data) {
+        })
+        socket.on('output', function (data) {
             let encodedString = String.fromCharCode.apply(null, new Uint8Array(data));
             resultBlock.innerText = encodedString;
-         });
-         socket.on('err', function (data) {
+        });
+        socket.on('err', function (data) {
             var encodedString = String.fromCharCode.apply(null, new Uint8Array(data));
             resultBlock.innerText = errorPrompt + "\n" + encodedString;
-         });
-         socket.on('connect_error', function (err) {
+        });
+        socket.on('connect_error', function (err) {
             resultBlock.innerText = errorPrompt + err.message;
             socket.close();
             unlock(btn);
-         });
+        });
     }
 
     $(btnSelector).click(function (e) {

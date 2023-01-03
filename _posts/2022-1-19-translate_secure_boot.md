@@ -3,6 +3,7 @@ title: "[译] 安全引导与镜像验证技术概览"
 date: 2022-1-19 17:21:27 +0800
 categories: [翻译, "Android"]
 tags: [android, 翻译, 高通]     # TAG names should always be lowercase
+img_path: /assets/img/translate_secure_boot/
 author: qualcomm
 license: false
 ---
@@ -39,7 +40,7 @@ All Rights Reserved.
 
 在最新版本的 QTI 的安全引导功能中，PBL 会加载如图 1 所示的两个镜像：
 
-![PBL 加载 REE 和 TEE 镜像](/assets/img/translate_secure_boot/pbl_loading.png)
+![PBL 加载 REE 和 TEE 镜像](pbl_loading.png)
 _图 1：PBL 加载 REE 和 TEE 镜像_
 
 * 一个用于协调加载富执行环境（REE，Rich Execution Environment）的扩展引导加载程序（XBL，eXtensible Boot Loader）。其包含操作系统内核和外围固件镜像。该软件镜像链运行在与操作系统内核相同的异常等级上。
@@ -85,14 +86,14 @@ XBL 镜像作为将在芯片上运行的所有非 TrustZone 镜像的信任根�
 
 QTI 和设备制造商可以在被称作双重签名的过程中对 Qualcomm TEE 镜像进行签名。这是为了确保该安全关键镜像只有在获得 QTI 和设备制造商的批准后才能执行。
 
-![存储设备，REE 异常等级和 TEE 异常等级](/assets/img/translate_secure_boot/exception_level.png)
+![存储设备，REE 异常等级和 TEE 异常等级](exception_level.png)
 _图 2：存储设备，REE 异常等级和 TEE 异常等级_
 
 ## 签名镜像格式
 
 如前所述，Qualcomm Technologies 固件镜像使用标准 ELF 格式，因此每个镜像都包含标准 ELF 标头（Header）和程序标头，同时支持 32 位和 64 位 ELF 类。图 3 展示了一个 32 位 ELF 文件的示例：
 
-![一个 32 位 ELF 文件的例子](/assets/img/translate_secure_boot/32bit_elf.png)
+![一个 32 位 ELF 文件的例子](32bit_elf.png)
 _图 3：一个 32 位 ELF 文件的例子_
 
 ELF 标头主要用于定位 ELF 镜像文件中的程序标头。程序标头包含 ELF 镜像文件中所有段的位置，特别是用于定位 ELF 文件中的哈希段，其中包含用于验证 ELF 镜像的验证信息。
@@ -107,7 +108,7 @@ ELF 标头主要用于定位 ELF 镜像文件中的程序标头。程序标头�
 
 也就是说，哈希段的格式如图 4 所示：
 
-![哈希段格式](/assets/img/translate_secure_boot/hash_segment.png)
+![哈希段格式](hash_segment.png)
 _图 4：哈希段格式_
 
 请务必注意，QTI 和 OEM 证书链/签名位于同一个哈希表上。由于验证镜像所需的时间主要用在检查哈希表中的值，因此向镜像添加 QTI 证书链和签名不会显着增加验证镜像所需的时间。
@@ -144,7 +145,7 @@ _图 4：哈希段格式_
 
 证书链的验证流程如图 5 所示：
 
-![证书链的验证流程](/assets/img/translate_secure_boot/verification_flow.png)
+![证书链的验证流程](verification_flow.png)
 _图 5：证书链的验证流程_
 
 根 CA 证书根据存储在 QTI 的 QFPROM eFuse 或硬件 ROM 代码中的哈希值进行验证。

@@ -3,6 +3,7 @@ title: 我的 Chrome 上安装的插件一览及介绍
 date: 2021-4-20 23:08:01 +0800
 categories: [推荐, Chrome]
 tags: [chrome]     # TAG names should always be lowercase
+img_path: /assets/img/chrome_extensions/
 ---
 
 想必不管是谁，在网上冲浪这么多年，多多少少都有听说过 [**Chrome 浏览器**](https://www.google.com/chrome/)，即使没有用过 Chrome，也至少用过基于 **Chromium 内核**的浏览器，例如：QQ 浏览器，360 浏览器，以及已经叛变的 Microsoft Edge。
@@ -21,7 +22,7 @@ tags: [chrome]     # TAG names should always be lowercase
 
 Chrome 的下载管理器，取代原本的 Chrome 下载界面：
 
-![Chrono](/assets/img/chrome_extensions/chrono.png)
+![Chrono](chrono.png)
 
 如果是原本就用外部下载工具取代 Chrome 下载的话，这个插件的意义就不是很大了。
 
@@ -33,13 +34,13 @@ Chrome 的下载管理器，取代原本的 Chrome 下载界面：
 
 重度 Github 用户必备插件。他会在你浏览 Github 仓库时，在侧面显示一个完整的仓库目录，可以方便地跳转到各个文件。
 
-![Octotree](/assets/img/chrome_extensions/octotree.png)
+![Octotree](octotree.png)
 
 ## [Proxy SwitchyOmega](https://chrome.google.com/webstore/detail/proxy-switchyomega/padekgcemlokbadohgkifijomclgjgif)
 
 用于管理和切换代理的插件。你可以通过域名通配符来决定浏览器访问一个网站是否经过代理还是使用直连：
 
-![Switchyomega](/assets/img/chrome_extensions/switchyomega.png)
+![Switchyomega](switchyomega.png)
 
 当一个网站打不开或部分加载失败时，该插件还会告诉你是访问哪个域名失败了，并且可以直接一键加入代理列表中。
 
@@ -60,7 +61,7 @@ Chrome 的下载管理器，取代原本的 Chrome 下载界面：
 
 * [AC-baidu-重定向优化百度搜狗谷歌必应搜索_favicon_双列](https://greasyfork.org/zh-CN/scripts/14178-ac-baidu-%E9%87%8D%E5%AE%9A%E5%90%91%E4%BC%98%E5%8C%96%E7%99%BE%E5%BA%A6%E6%90%9C%E7%8B%97%E8%B0%B7%E6%AD%8C%E5%BF%85%E5%BA%94%E6%90%9C%E7%B4%A2-favicon-%E5%8F%8C%E5%88%97): 虽然名字长到离谱，但是是非常好用的脚本，可以修改百度、谷歌、必应等搜索页面的 ui，屏蔽广告词条和侧边栏等等：
 
-  ![AC Baidu](/assets/img/chrome_extensions/ac_baidu.png)
+  ![AC Baidu](ac_baidu.png)
 
 * [Direct download from Google Play](https://greasyfork.org/zh-CN/scripts/33005-direct-download-from-google-play): 集成第三方下载链接到 Google Play 商店界面，方便你直接下载 apk 到电脑上，适用于常用安卓模拟器的。
 * [EhSyringe](https://github.com/EhTagTranslation/EhSyringe): 咳咳，这个不能细说，没法细说，自己去看看就明白了。
@@ -77,6 +78,6 @@ Chrome 的下载管理器，取代原本的 Chrome 下载界面：
 
 ## [哔哩哔哩助手](https://chrome.google.com/webstore/detail/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9%E5%8A%A9%E6%89%8B%EF%BC%9Abilibilicom-%E7%BB%BC%E5%90%88%E8%BE%85%E5%8A%A9%E6%89%A9%E5%B1%95/kpbnombpnpcffllnianjibmpadjolanh)
 
-![Bilibili Help](/assets/img/chrome_extensions/bilibili_helper.jpg)
+![Bilibili Help](bilibili_helper.jpg)
 
 很好用的 B 站辅助插件，你想要的功能几乎都有。

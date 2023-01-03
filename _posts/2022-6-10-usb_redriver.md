@@ -3,6 +3,7 @@ title: "USB redriver: NB7VPQ904M 浅析"
 date: 2022-6-10 15:45:39 +0800
 categories: [杂记, USB]
 tags: [usb, driver, qualcomm]     # TAG names should always be lowercase
+img_path: /assets/img/usb_redriver/
 ---
 
 ## 器件介绍
@@ -23,7 +24,7 @@ NB7VPQ904M 是一颗由 *onsemi* 的子公司 *Semiconductor Components Industri
 
 NB7VPQ904M 没有公开其规格书，在网络上的资料几乎没有。不过我们仍然可以在[大大通](https://www.wpgdadatong.com/)这个网站上找到一份[有关 NB7VPQ904M 的硬件原理图](https://www.wpgdadatong.com/cn/solution/detail?PID=7087)：
 
-![NB7VPQ904M](/assets/img/usb_redriver/nb7vpq904m.png)
+![NB7VPQ904M](nb7vpq904m.png)
 
 我们可以看到，该器件最重要的部分就是位于左右两侧的 USB 3.2 信号针脚，以 `A_RXTX+` 为例：`A` 表示 A 通道，该器件一共四个通道，对应 Type-C 的四组差分线；`RXTX` 表示该针脚既可以作为发射端（Transmitter）也可以作为接收端（Receiver），另一端使用 `TXRX` 表示这两针脚是对应关系；`+` 对应一组差分信号线中的正极。
 

@@ -69,13 +69,15 @@ ninja -f out/combined-kona.ninja -t compdb | tee ./compile_commands.json
 #!/usr/bin/python3
 import sys
 import json
+import os
 from pathlib import Path
 
 if len(sys.argv) != 4:
     print("Usage: python3 main.py <project directory> <input compiledb path> <output compiledb path>")
+    sys.exit()
 
 files = Path(sys.argv[1])
-result = list(map(str, list(files.rglob("*.cpp")) + list(files.rglob("*.c"))))
+result = list(map(os.path.realpath, map(str, list(files.rglob("*.cpp")) + list(files.rglob("*.c")))))
 
 with open(sys.argv[2]) as compdb_input:
     compdb_origin = json.load(compdb_input)

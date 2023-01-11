@@ -6,6 +6,6 @@ permalink: /robots.txt
 User-agent: *
 
 Disallow: /norobots/
-Disallow: /assets/
+Disallow: /assets/lib/
 
 Sitemap: {{ '/sitemap.xml' | absolute_url }}

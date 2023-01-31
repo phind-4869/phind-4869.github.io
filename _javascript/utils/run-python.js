@@ -87,12 +87,12 @@ $(function () {
             unlock(btn);
         })
         socket.on('output', function (data) {
-            let encodedString = String.fromCharCode.apply(null, new Uint8Array(data));
-            resultBlock.innerText = encodedString;
+            let decodedString = new TextDecoder().decode(new Uint8Array(data));
+            resultBlock.innerText = decodedString;
         });
         socket.on('err', function (data) {
-            var encodedString = String.fromCharCode.apply(null, new Uint8Array(data));
-            resultBlock.innerText = errorPrompt + "\n" + encodedString;
+            let decodedString = new TextDecoder().decode(new Uint8Array(data));
+            resultBlock.innerText = errorPrompt + "\n" + decodedString;
         });
         socket.on('connect_error', function (err) {
             resultBlock.innerText = errorPrompt + err.message;

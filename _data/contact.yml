@@ -1,30 +1,29 @@
 #  联系方式选项
 
--
-  type: github
+- type: github
   icon: 'iconfont icon-github'
--
-  type: twitter
+
+- type: twitter
   icon: 'iconfont icon-twitter'
--
-  type: email
+
+- type: email
   icon: 'iconfont icon-mail'
   noblank: true            # 在当前页面打开链接
--
-  type: rss
+
+- type: rss
   icon: 'iconfont icon-rss'
   noblank: true
 
-# Uncomment and complete the url below to enable more contact options
+# 取消注释并完善下列链接以启用更多联系方式
 # -
 #   type: mastodon
-#   icon: 'iconfont icon-mastodon'   # icons powered by <https://fontawesome.com/>
-#   url:  ''                  # Fill with your Mastodon account page, rel="me" will be applied for verification
+#   icon: 'iconfont icon-mastodon'
+#   url:  ''                  # 填入你的 Mastodon 账号页面, rel="me" 将会被用于验证
 # -
 #   type: linkedin
-#   icon: 'iconfont icon-linkedin'   # icons powered by <https://fontawesome.com/>
-#   url:  ''                  # Fill with your Linkedin homepage
+#   icon: 'iconfont icon-linkedin'
+#   url:  ''                  # 填入你的 Linkedin 主页
 # -
 #   type: stack-overflow
 #   icon: 'iconfont icon-stack-overflow'
-#   url:  ''                  # Fill with your stackoverflow homepage
+#   url:  ''                  # 填入你的 stackoverflow 主页

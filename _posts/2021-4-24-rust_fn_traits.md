@@ -450,3 +450,65 @@ fn main() {
 }
 ```
 {: run="rust" }
+
+## Rust 闭包的内部实现
+
+如何能够证明 Rust 闭包的内部实现确实如我们所想的那样呢？我们可以借助标准库 `std::mem::size_of_val` 来一窥闭包类型的实质。
+
+```rust
+fn main() {
+    let x: u8 = 12;
+    let y: u8 = 13;
+    let z: u8 = 14;
+    let f = || x + y + z;
+    println!("{}", std::mem::size_of_val(&f));
+}
+```
+{: run="rust" }
+
+上面的代码应该输出什么？我们分析一下，闭包 `f` 只需要捕获 `x`, `y`, `z` 的不可变引用就能计算出 `x + y + z` 的值，因此，该闭包理应包含三个变量的不可变引用，也就是说，该闭包的大小应当是 `3 * size_of::<&u8>` 即 **24 字节**。点击一下上方的运行按钮，你会发现确实如此。
+
+我们给闭包 `f` 添加 `move` 关键字：
+
+```rust
+fn main() {
+    let x: u8 = 12;
+    let y: u8 = 13;
+    let z: u8 = 14;
+    let f = move || x + y + z;
+    println!("{}", std::mem::size_of_val(&f));
+}
+```
+{: highlight-lines="5" run="rust" }
+
+我们再来分析一下，由于 `move` 关键字的加入，闭包 `f` 会将 `x`, `y`, `z` 移动到自己的匿名结构体内，因此闭包 `f` 的大小理应是 3 个 `u8` 的大小，即 **3 字节**。点击上方的运行按钮，验证确实如此。
+
+我们还可以通过一些 unsafe 的手段，直接查看闭包 `f` 内部储存的数据：
+
+```rust
+fn cap_by_ref() {
+    let x: u8 = 12;
+    let y: u8 = 13;
+    let z: u8 = 14;
+    let f = || x + y + z;
+    let f_inner: [&u8; 3] = unsafe { std::mem::transmute(f) };
+    println!("cap_by_ref: {:p},{:p},{:p}", f_inner[0], f_inner[1], f_inner[2]);
+    println!("cap_by_ref: {},{},{}", *f_inner[0], *f_inner[1], *f_inner[2]);
+}
+
+fn cap_with_move() {
+    let x: u8 = 12;
+    let y: u8 = 13;
+    let z: u8 = 14;
+    let f =  move|| x + y + z;
+    let f_inner: [u8; 3] = unsafe { std::mem::transmute(f) };
+    println!("cap_with_move: {},{},{}", f_inner[0], f_inner[1], f_inner[2]);
+}
+
+
+fn main() {
+    cap_by_ref();
+    cap_with_move();
+}
+```
+{: run="rust" }

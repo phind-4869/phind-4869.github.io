@@ -1,5 +1,5 @@
 -
-  icon: https://img.shields.io/badge/link-996.icu-red.svg
+  icon: /assets/img/996-icu/link-996.icu-red.svg
   # 是否使用 Iconfont 的图标字体
   use_iconfont: false
   name: 996.icu

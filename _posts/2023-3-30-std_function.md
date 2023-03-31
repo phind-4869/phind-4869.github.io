@@ -13,7 +13,7 @@ tags: [c++, 编程语言]     # TAG names should always be lowercase
 
 int main() {
   std::function<unsigned(unsigned)> fact = [&fact](unsigned x) -> unsigned {
-    return x <= 1u ? 1.0 : x * fact(x - 1);
+    return x <= 1 ? 1 : x * fact(x - 1);
   };
   std::cout << fact(10) << std::endl;
 

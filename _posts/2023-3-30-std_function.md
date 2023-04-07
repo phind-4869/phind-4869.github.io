@@ -217,7 +217,7 @@ class Closure<Ret(Args...)> {
 
   Ret operator()(Args&&... args) const {
     // 最终实际调用的是模板特化后的 invoke 函数
-    return _invoke(_fp, std::forward<Args...>(args)...);
+    return _invoke(_fp, std::forward<Args>(args)...);
   }
 
  private:
@@ -268,7 +268,7 @@ class Closure<Ret(Args...)> {
 
   Ret operator()(Args&&... args) const {
     // 最终实际调用的是模板特化后的 invoke 函数
-    return _invoke(_fp, std::forward<Args...>(args)...);
+    return _invoke(_fp, std::forward<Args>(args)...);
   }
 
  private:
@@ -319,7 +319,7 @@ class Closure<Ret(Args...)> {
   }
 
   Ret operator()(Args&&... args) const {
-    return _invoke(_fp, std::forward<Args...>(args)...);
+    return _invoke(_fp, std::forward<Args>(args)...);
   }
 
  private:

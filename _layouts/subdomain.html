@@ -3,33 +3,31 @@ layout: page
 # List all subdomains
 ---
 
-{% for subdomain in site.data.subdomain %}
-<div class="subdomain-entity">
-    <div class="subdomain-head">
-        <h1>
-            <a href="{{ subdomain.link }}" class="subdomain-head-a">
-                {% if subdomain.icon %}
-                <div class="subdomain-icon">
-                    <img src="/assets/img/subdomain/{{ subdomain.icon }}" alt="{{ subdomain.icon }}"/>
-                </div>
-                {% endif %}
-                <div class="subdomain-title">
-                    {{ subdomain.title }}
-                </div>
-            </a>
+<div id="post-list">
+  {% for subdomain in site.data.subdomain %}
+  <div class="card post-preview">
+    <a href="{{ subdomain.link }}" target="_blank">
+      <div class="card-body">
+        <h1 class="card-title">
+          {% if subdomain.icon %}
+          <div class="subdomain-icon">
+            <img src="/assets/img/subdomain/{{ subdomain.icon }}" alt="{{ subdomain.icon }}" />
+          </div>
+          {% endif %}
+          <div class="subdomain-title">
+            {{ subdomain.title }}
+          </div>
         </h1>
-    </div>
-    <div class="subdomain-link">
-        <h6>
-            ▶&nbsp;<a href="{{ subdomain.link }}" class="subdomain-a">
-                {{ subdomain.link }}
-            </a>
-        </h6>
-    </div>
-    <div class="subdomain-desc">
-        <p>
+        <div class="card-text post-content">
+          <p>
             {{ subdomain.description }}
-        </p>
-    </div>
+          </p>
+        </div>
+        <div class="post-meta text-muted subdomain-a">
+          ▶ {{ subdomain.link }}
+        </div>
+      </div>
+    </a>
+  </div>
+  {% endfor %}
 </div>
-{% endfor %}

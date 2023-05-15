@@ -486,6 +486,176 @@ int main(int argc, char* argv[]) {
 ```
 {: run="cpp" }
 
+## 协程计时器
+
+根据上面的信息，我们实现协程计时器有两个思路：
+
+1. 在 `awaitable` 的 `await_suspend` 函数中开辟新的线程，在新线程中计时，并注册唤醒协程的回调函数。该方案的优点是精确，能确保协程在指定时间被唤醒。
+2. 不开辟新线程，而是在主线程中主动调用 `handle.resume()` 来推动计时器。该方案的优点是不需要开辟新的线程，但是缺点是只有在主线程主动调用 `handle.resume()` 时，才能知道计时器究竟有没有计时结束，因此这种计时器的计时不够精准，其精确程度取决于主线程调用 `handle.resume()` 的频率。
+
+第一种方案和 `AddOneAwaitable` 的实现大同小异，我们就不再写一遍了。我们主要来说说第二种计时器。
+
+首先 `task` 类型没啥特殊的地方，照着以前的用就行：
+
+```cpp
+#include <coroutine>
+
+class task {
+ public:
+  class promise_type {
+   public:
+    task get_return_object() {
+      return {std::coroutine_handle<promise_type>::from_promise(*this)};
+    }
+    std::suspend_never initial_suspend() { return {}; }
+    std::suspend_always final_suspend() noexcept { return {}; }
+    void unhandled_exception() {}
+    void return_void() {}
+  };
+
+  task(std::coroutine_handle<promise_type> handle) : _handle(handle) {}
+  bool done() { return _handle.done(); }
+  void resume() { _handle.resume(); }
+
+ private:
+  std::coroutine_handle<promise_type> _handle;
+};
+```
+
+然后是 `awaitable` 类型，由于我们不打算开辟新线程来计时，因此我们不能使用形如 `std::this_thread::wait_for()` 的方法来计时，否则会直接阻塞主线程。
+
+那么我们要做的其实就很简单了，只在 `awaitable` 里做超时判断，返回 `true`/`false` 给外部：
+
+```cpp
+#include <chrono>
+#include <coroutine>
+
+class SleepFor {
+ public:
+  template <typename DurationT>
+  SleepFor(DurationT duration) {
+    _time_wait_for = std::chrono::steady_clock::now() + duration;
+  }
+  bool await_ready() const { return _timeout(); }
+  bool await_suspend(std::coroutine_handle<>) const { return !_timeout(); }
+  // 这里是关键，将当前是否超时返回给 co_await 的调用者
+  bool await_resume() const { return _timeout(); }
+
+ private:
+  inline bool _timeout() const {
+    return std::chrono::steady_clock::now() >= _time_wait_for;
+  }
+  std::chrono::time_point<std::chrono::steady_clock> _time_wait_for;
+};
+```
+
+那么，我们可以这样来实现协程计时器函数：
+
+```cpp
+template <typename DurationT>
+task sleep_for(DurationT duration, std::function<void(void)> callback) {
+  SleepFor sleep_awaitable{duration};
+  while (!co_await sleep_awaitable)
+    ;
+  callback();
+}
+```
+
+由于是单线程，我们在 `main` 函数中需要不断地推动计时器，因此最好的实现方式就是事件循环：
+
+```cpp
+int main(int argc, char* argv[]) {
+  task t =
+      sleep_for(5s, []() { std::cout << "5 seconds passed" << std::endl; });
+
+  for (;;) {
+    // 做主线程该做的事情。在这里，我们使用 sleep 100ms 的方法来代表主线程做了
+    // 100ms 的其他事情
+    std::this_thread::sleep_for(100ms);
+
+    // 我们在 resume() 的时候才知道计时器有没有跑完，因此这个计时器是不准确的，
+    // 其精确程度取决于每一轮事件循环中，主线程需要做多久其他的事情。
+    // 但这种方法并不是没有优点，考虑数据竞争问题，这种方案可以有效地避免主线程
+    // 在处理数据的过程中，协程被唤醒并且导致数据竞争。
+    if (!t.done()) {
+      t.resume();
+    }
+  }
+}
+```
+
+我们整合一下代码，可以把 `SleepFor` 藏在 `sleep_for` 函数的内部以隐藏其实现细节：
+
+```cpp
+#include <chrono>
+#include <coroutine>
+#include <functional>
+#include <iostream>
+#include <thread>
+
+using namespace std::chrono_literals;
+
+class task {
+ public:
+  class promise_type {
+   public:
+    task get_return_object() {
+      return {std::coroutine_handle<promise_type>::from_promise(*this)};
+    }
+    std::suspend_never initial_suspend() { return {}; }
+    std::suspend_always final_suspend() noexcept { return {}; }
+    void unhandled_exception() {}
+    void return_void() {}
+  };
+
+  task(std::coroutine_handle<promise_type> handle) : _handle(handle) {}
+  bool done() { return _handle.done(); }
+  void resume() { _handle.resume(); }
+
+ private:
+  std::coroutine_handle<promise_type> _handle;
+};
+
+template <typename DurationT>
+task sleep_for(DurationT duration, std::function<void(void)> callback) {
+  class SleepFor {
+   public:
+    SleepFor(DurationT duration) {
+      _time_wait_for = std::chrono::steady_clock::now() + duration;
+    }
+    bool await_ready() const { return _timeout(); }
+    bool await_suspend(std::coroutine_handle<>) const { return !_timeout(); }
+    bool await_resume() const { return _timeout(); }
+
+   private:
+    inline bool _timeout() const {
+      return std::chrono::steady_clock::now() >= _time_wait_for;
+    }
+    std::chrono::time_point<std::chrono::steady_clock> _time_wait_for;
+  };
+
+  SleepFor sleep_awaitable{duration};
+  while (!co_await sleep_awaitable)
+    ;
+  callback();
+}
+
+int main(int argc, char* argv[]) {
+  task t =
+      sleep_for(5s, []() { std::cout << "5 seconds passed" << std::endl; });
+
+  for (;;) {
+    // 做主线程该做的事情。在这里，我们使用 sleep 100ms 的方法来代表主线程做了
+    // 100ms 的其他事情
+    std::this_thread::sleep_for(100ms);
+
+    if (!t.done()) {
+      t.resume();
+    }
+  }
+}
+```
+
 ## `co_return`
 
 我们知道，协程函数的返回值是一个协程对象，因此我们没法简单地通过 `return value;` 将返回值从协程函数内传递给协程调用者。

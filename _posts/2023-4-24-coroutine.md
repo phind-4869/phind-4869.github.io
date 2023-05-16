@@ -80,12 +80,16 @@ class AddOne {
 int main(int argc, char* argv[]) {
   int value = 1;
   int result1 = 0;
+  bool result1_ready = false;
   int result2 = 0;
+  bool result2_ready = false;
   std::function<void(int)> result_handle1 = [&](int _result) mutable {
     result1 = _result + 1;
+    result1_ready = true;
   };
   std::function<void(int)> result_handle2 = [&](int _result) mutable {
     result2 = _result * _result;
+    result2_ready = true;
   };
 
   // 为了避免 add_one.wait_for_result
@@ -93,18 +97,12 @@ int main(int argc, char* argv[]) {
   std::thread thread([&]() {
     AddOne add_one(value, result_handle1);
     add_one.wait_for_result();
-    // 做后续的处理...
-    // 例如：
-    std::cout << "result1: " << result1 << std::endl;
   });
 
   // 如果还需要等待另一个阻塞数据，那就需要再开一个线程
   std::thread thread2([&]() {
     AddOne add_one(value, result_handle2);
     add_one.wait_for_result();
-    // 做后续的处理...
-    // 例如：
-    std::cout << "result2: " << result2 << std::endl;
   });
 
   // std::thread 不会阻塞主线程，我们继续做其他事情...
@@ -226,17 +224,13 @@ class task {
 
 ```cpp
 // 返回值 task 将会自动生成，可以充当返回值的类型 T 一定要有 T::promise_type
-task add_one_coroutine(int x, int& handled_result,
-                       std::function<void(int)> result_handle) {
+task add_one_coroutine(int x, std::function<void(int)> result_handle) {
   // co_await 一个 AddOneAwaitable，
   // 协程会在此处暂停，然后将控制交还给 add_one_coroutine 的调用者。
   // 整个表达式的返回值是 AddOneAwaitable::await_resume() 的返回值。
   int result = co_await AddOneAwaitable(x);
   // 协程句柄的 resume() 被 AddOneAwaitable 注册给 AddOne 的回调函数调用，协程函数恢复执行，可以处理数据了
   result_handle(result);
-  // 做后续的处理...
-  // 例如：
-  std::cout << "handled_result: " << handled_result << std::endl;
 }
 ```
 
@@ -255,16 +249,19 @@ int main(int argc, char* argv[]) {
   };
 
   // 把线程模型改成协程模型：
-  task task1 = add_one_coroutine(value, result1, result_handle1);
-  task task2 = add_one_coroutine(value, result2, result_handle2);
+  task task1 = add_one_coroutine(value, result_handle1);
+  task task2 = add_one_coroutine(value, result_handle2);
 
   // 由于上面两个任务都会阻塞暂停协程，所以 main 函数还可以继续做其他事情
   std::cout << "hello world" << std::endl;
 
-  // 等待协程完成
+  // main 需要做的事情已经做完了，等待协程完成
   while (true) {
-    if (task1.done() && task2.done())
+    if (task1.done() && task2.done()) {
+      // 处理结果
+      std::cout << result1 << result2 << std::endl;
       break;
+    }
     else
       std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
@@ -363,17 +360,13 @@ class task {
 };
 
 // 返回值 task 将会自动生成，可以充当返回值的类型 T 一定要有 T::promise_type
-task add_one_coroutine(int x, int& handled_result,
-                       std::function<void(int)> result_handle) {
+task add_one_coroutine(int x, std::function<void(int)> result_handle) {
   // co_await 一个 AddOneAwaitable，
   // 协程会在此处暂停，然后将控制交还给 add_one_coroutine 的调用者。
   // 整个表达式的返回值是 AddOneAwaitable::await_resume() 的返回值。
   int result = co_await AddOneAwaitable(x);
   // 协程句柄的 resume() 被 AddOneAwaitable 注册给 AddOne 的回调函数调用，协程函数恢复执行，可以处理数据了
   result_handle(result);
-  // 做后续的处理...
-  // 例如：
-  std::cout << "handled_result: " << handled_result << std::endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -388,16 +381,19 @@ int main(int argc, char* argv[]) {
   };
 
   // 把线程模型改成协程模型：
-  task task1 = add_one_coroutine(value, result1, result_handle1);
-  task task2 = add_one_coroutine(value, result2, result_handle2);
+  task task1 = add_one_coroutine(value, result_handle1);
+  task task2 = add_one_coroutine(value, result_handle2);
 
-  // 由于上面两个任务都会阻塞暂停，所以 main 函数还可以继续做其他事情
+  // 由于上面两个任务都会阻塞暂停协程，所以 main 函数还可以继续做其他事情
   std::cout << "hello world" << std::endl;
 
-  // 等待协程完成
+  // main 需要做的事情已经做完了，等待协程完成
   while (true) {
-    if (task1.done() && task2.done())
+    if (task1.done() && task2.done()) {
+      // 处理结果
+      std::cout << result1 << result2 << std::endl;
       break;
+    }
     else
       std::this_thread::sleep_for(std::chrono::milliseconds(10));
   }
@@ -783,6 +779,202 @@ int main(int argc, char* argv[]) {
 }
 ```
 {: run="cpp" }
+
+## 让 `task` 也可 `co_await`
+
+基于上面的 `AddOneAwaitable` 的例子，我们试着将 `task` 也改造成 `awaitable` 类型。
+
+不过我们先简化一下上面的例子，不再用回调函数了，而是用 `co_return` 返回结果：
+
+```cpp
+task add_one_coroutine(int x) {
+  int result = co_await AddOneAwaitable(x);
+  co_return result;
+}
+```
+
+我们的目标是，让 `task` 也可以被 `co_await`，这意味着我们可以写：
+
+```cpp
+task add_one_coroutine(int x) {
+  int result = co_await AddOneAwaitable(x);
+  co_return result;
+}
+
+task add_two_coroutine(int x) {
+  int result = co_await add_one_coroutine(x);
+  result = co_await add_one_coroutine(result);
+  co_return result;
+}
+
+task add_three_coroutine(int x) {
+  int result = co_await add_two_coroutine(x);
+  result = co_await add_one_coroutine(result);
+  co_return result;
+}
+```
+
+首先我们先把 `task::promise_type` 的 `return_void()` 换成 `return_value()` 以满足 `co_return` 的需求：
+
+```cpp
+class task {
+ public:
+  class promise_type {
+   public:
+    ...
+    void return_value(int value) { _value = value; }
+    int _value;
+  };
+  ...
+  int get_value() const { return _handle.promise()._value; }
+};
+```
+
+然后我们为 `task` 实现 `awaitable` 类型所需的三个函数：
+
+```cpp
+class task {
+ public:
+  class promise_type {
+   public:
+    ...
+    std::suspend_always final_suspend() noexcept {
+      // 这里是关键，我们需要在协程函数结束之后唤醒父协程
+      if (_parent_handle) _parent_handle.resume();
+      return {};
+    }
+    // 父协程的句柄
+    std::coroutine_handle<promise_type> _parent_handle;
+  };
+  ...
+  bool await_ready() const { return false; }
+  void await_suspend(std::coroutine_handle<promise_type> handle) {
+    // 把父协程的句柄传递给 promise，这样在当前协程执行结束之后可以调用它的
+    // resume() 来恢复父协程
+    _handle.promise()._parent_handle = handle;
+  }
+  int await_resume() const { return get_value(); }
+
+ private:
+  std::coroutine_handle<promise_type> _handle;
+};
+```
+
+完整代码如下，该例子在启动 15 秒后输出 4：
+
+```cpp
+#include <chrono>
+#include <coroutine>
+#include <functional>
+#include <iostream>
+#include <thread>
+
+class AddOne {
+ public:
+  AddOne(int x, std::function<void(int)> result_ready_cb)
+      : _thread{[=, result_ready_cb = std::move(result_ready_cb)]() mutable {
+          std::this_thread::sleep_for(std::chrono::seconds(5));
+          result_ready_cb(x + 1);
+        }} {}
+
+  ~AddOne() {
+    if (_thread.joinable()) _thread.detach();
+  }
+
+  void wait_for_result() { _thread.join(); }
+
+ private:
+  std::thread _thread;
+};
+
+class AddOneAwaitable {
+ public:
+  AddOneAwaitable(int x) : _x(x) {}
+  bool await_ready() const { return false; }
+  void await_suspend(std::coroutine_handle<> handle) {
+    AddOne add_one(_x, [=, this](int result) {
+      _result = result;
+      handle.resume();
+    });
+  }
+  int await_resume() const { return _result; }
+
+ private:
+  int _x;
+  int _result;
+};
+
+class task {
+ public:
+  class promise_type {
+   public:
+    task get_return_object() {
+      return {std::coroutine_handle<promise_type>::from_promise(*this)};
+    }
+    std::suspend_never initial_suspend() { return {}; }
+    std::suspend_always final_suspend() noexcept {
+      // 这里是关键，我们需要在协程函数结束之后唤醒父协程
+      if (_parent_handle) _parent_handle.resume();
+      return {};
+    }
+    void unhandled_exception() {}
+    void return_value(int value) { _value = value; }
+    int _value;
+    // 父协程的句柄
+    std::coroutine_handle<promise_type> _parent_handle;
+  };
+
+  task(std::coroutine_handle<promise_type> handle) : _handle(handle) {}
+  bool done() { return _handle.done(); }
+  int get_value() const { return _handle.promise()._value; }
+  bool await_ready() const { return false; }
+  void await_suspend(std::coroutine_handle<promise_type> handle) {
+    // 把父协程的句柄传递给 promise，这样在当前协程执行结束之后可以调用它的
+    // resume() 来恢复父协程
+    _handle.promise()._parent_handle = handle;
+  }
+  int await_resume() const { return get_value(); }
+
+ private:
+  std::coroutine_handle<promise_type> _handle;
+};
+
+task add_one_coroutine(int x) {
+  int result = co_await AddOneAwaitable(x);
+  co_return result;
+}
+
+task add_two_coroutine(int x) {
+  int result = co_await add_one_coroutine(x);
+  result = co_await add_one_coroutine(result);
+  co_return result;
+}
+
+task add_three_coroutine(int x) {
+  int result = co_await add_two_coroutine(x);
+  result = co_await add_one_coroutine(result);
+  co_return result;
+}
+
+int main(int argc, char* argv[]) {
+  int value = 1;
+  task task = add_three_coroutine(value);
+
+  // 由于上面两个任务都会阻塞暂停协程，所以 main 函数还可以继续做其他事情
+  std::cout << "hello world" << std::endl;
+
+  // main 需要做的事情已经做完了，等待协程完成
+  while (true) {
+    if (task.done()) {
+      // 处理结果
+      std::cout << task.get_value() << std::endl;
+      break;
+    } else
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  }
+  return 0;
+}
+```
 
 ## 展望 C++23
 

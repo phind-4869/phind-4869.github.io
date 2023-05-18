@@ -1,7 +1,10 @@
 <!-- The Top Bar -->
 
 <div id="topbar-wrapper">
-  <div id="topbar" class="container d-flex align-items-center justify-content-between h-100 pl-3 pr-3 pl-md-4 pr-md-4">
+  <div
+    id="topbar"
+    class="container d-flex align-items-center justify-content-between h-100"
+  >
     <span id="breadcrumb">
       {% assign paths = page.url | split: '/' %}
 
@@ -20,9 +23,9 @@
 
           {% elsif forloop.last %}
             {% if page.collection == 'tabs' %}
-              <span>{{ site.data.locales[include.lang].tabs[item] | default: page.title }}</span>
+              <span>{{ site.data.locales[include.lang].tabs[item] | default: page.title | flatify }}</span>
             {% else %}
-              <span>{{ page.title }}</span>
+              <span>{{ page.title | flatify }}</span>
             {% endif %}
 
           {% elsif page.layout == 'category' or page.layout == 'tag' %}

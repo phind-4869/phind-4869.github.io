@@ -7,9 +7,9 @@ tags: [c++, 编程语言, c++20, rust]     # TAG names should always be lowercas
 
 在 C++20 中，我们有 **Coroutine**，在 Rust 中，我们有 **Async**。严格来说，二者之间没有完全等效的概念，但是我们可以找到一些相似之处，进而了解 C++ Coroutine 与 Rust Async 设计上的异同点。
 
-由于我的[上一篇文章]({{ site.baseurl }}{ link _posts/2023-4-24-coroutine.md })介绍了 C++ 的 Coroutine，因此我们本文主要**以 C++ Coroutine 的视角来看 Rust 的 Async**。
+由于我的[上一篇文章]({{ site.baseurl }}{% link _posts/2023-4-24-coroutine.md %})介绍了 C++ 的 Coroutine，因此我们本文主要**以 C++ Coroutine 的视角来看 Rust 的 Async**。
 
-为了更好地体现出二者的异同，我们从[上一篇文章]({{ site.baseurl }}{ link _posts/2023-4-24-coroutine.md })中的**斐波那契数列生成器**入手，尝试用 Rust 一比一复刻该例子：
+为了更好地体现出二者的异同，我们从[上一篇文章]({{ site.baseurl }}{% link _posts/2023-4-24-coroutine.md %})中的**斐波那契数列生成器**入手，尝试用 Rust 一比一复刻该例子：
 
 ```cpp
 #include <coroutine>
@@ -86,7 +86,7 @@ C++ 划分了四个类型：**`awaitable` 类型**是可以被 `co_await` 的类
 
 并且，C++ 的 `awaitable` 类型需要自己定义，而 Rust 的 `Future` 类型大部分情况下直接使用 `async` 语法来创建。
 
-再深入到细节来看看，C++ 中 `handle.resume()`{:.language-cpp} 与 Rust 中 `Future::poll()`{:.language-rust} 并非完全等效的概念，因为 `Future::poll()`{:.language-rust} 包含一个 `Context` 参数，它在内部包含一个 **`Waker` 类型**：从名字中很容易看出，它用来唤醒协程，通常注册在回调函数之中，类似于我们在 C++ 中构建一个调用了 `handle.resume()`{:.language-cpp} 的回调函数（参见[上一篇文章]({{ site.baseurl }}{ link _posts/2023-4-24-coroutine.md })中 `AddOneAwaitable` 的实现）。
+再深入到细节来看看，C++ 中 `handle.resume()`{:.language-cpp} 与 Rust 中 `Future::poll()`{:.language-rust} 并非完全等效的概念，因为 `Future::poll()`{:.language-rust} 包含一个 `Context` 参数，它在内部包含一个 **`Waker` 类型**：从名字中很容易看出，它用来唤醒协程，通常注册在回调函数之中，类似于我们在 C++ 中构建一个调用了 `handle.resume()`{:.language-cpp} 的回调函数（参见[上一篇文章]({{ site.baseurl }}{% link _posts/2023-4-24-coroutine.md %})中 `AddOneAwaitable` 的实现）。
 
 另一方面，C++ 中协程会根据 `promise.initial_suspend()`{:.language-cpp} 来决定协程是否在协程函数入口点暂停，但是 **Rust 的协程天生是惰性的**，必须通过 `Future::poll()`{:.language-rust} 来推动它执行。
 

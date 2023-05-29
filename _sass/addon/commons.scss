@@ -295,23 +295,7 @@ i {
 }
 
 #access-lastmod {
-  li {
-    height: 1.8rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    list-style: none;
-  }
-
   a {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space:nowrap;
-    max-width: 100%;
-    display: block;
-
     &:hover {
       @extend %link-hover;
     }
@@ -336,16 +320,6 @@ i {
       margin-top: 0;
       margin-bottom: 0;
     }
-
-    /* [scroll-focus] added by `smooth-scroll.js` */
-    &:target:not([scroll-focus]),
-    &[scroll-focus='true'] > p {
-      background-color: var(--footnote-target-bg);
-      width: -moz-fit-content;
-      width: -webkit-fit-content;
-      width: fit-content;
-      transition: background-color 1.5s ease-in-out;
-    }
   }
 }
 
@@ -356,12 +330,6 @@ i {
 
     border-bottom-style: none !important;
     transition: background-color 1.5s ease-in-out;
-  }
-
-  /* [scroll-focus] added by `smooth-scroll.js` */
-  @at-root sup:target:not([scroll-focus]),
-    sup[scroll-focus='true'] > a#{&} {
-    background-color: var(--footnote-target-bg);
   }
 }
 
@@ -1175,10 +1143,6 @@ $btn-mb: 0.5rem;
     a:not(:hover) {
       @extend %no-bottom-border;
     }
-  }
-
-  @at-root .row:only-child > #{&} {
-    padding-bottom: 3rem;
   }
 }
 

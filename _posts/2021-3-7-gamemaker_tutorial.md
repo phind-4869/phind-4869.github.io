@@ -4,6 +4,7 @@ date: 2021-3-7 17:10:05 +0800
 categories: [教程, 'GameMaker 8.0']
 tags: [教程, gm8, 编程语言]     # TAG names should always be lowercase
 pin: true
+image: /assets/img/gm8_tutorials/gamemaker-icon.jpg
 ---
 
 这是我从2017年开始在 Heabot 论坛（已关停）编写的一系列关于 GameMaker 8.0 的教程，最早是想写在贴吧，但是贴吧嘛懂得都懂，格式乱+不能二次编辑+吞贴，于是选择了 Heabot 论坛。

@@ -4,7 +4,6 @@ import {
   imgPopup,
   initLocaleDatetime,
   initClipboard,
-  initPageviews,
   toc,
   highlightLines,
   runCpp,
@@ -21,7 +20,6 @@ imgPopup();
 initLocaleDatetime();
 initClipboard();
 toc();
-initPageviews();
 highlightLines();
 runCpp();
 runJavascript();

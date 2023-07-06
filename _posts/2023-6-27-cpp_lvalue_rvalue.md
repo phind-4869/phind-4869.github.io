@@ -155,7 +155,7 @@ int main() {
     std::cout << "What will happen if I access ref.p: " << *ref.p << std::endl;
 }
 ```
-{: run="cpp" highlight-lines="18" }
+{: run="cpp" highlight-lines="19" }
 
 如上所示，`return_prvalue()` 函数返回一个纯右值，而 `ref` 是一个引用，那么问题来了：这段代码是否会因为 `ref` 绑定的那个对象被析构从而导致下一行访问 `ref.p` 时发生未定义行为？
 

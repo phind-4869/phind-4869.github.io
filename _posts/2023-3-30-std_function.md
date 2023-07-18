@@ -278,11 +278,9 @@ class Closure<Ret(Args...)> {
 };
 ```
 
-让我们来测试一下它能不能做到闭包递归：
+不过有一个细节需要注意，我们的泛型类型 `Lambda` 有可能是引用类型（涉及到引用折叠的概念，有兴趣的话可以在[如何在 C++ 中实现柯里化]({{ base.url }}{% link _posts/2023-7-18-cpp_currying.md %})这篇文章中了解更多），而如果定义一个引用类型的指针就会出错。因此我们使用标准库中的 `std::remove_reference_t` 来获取它去掉引用之后的类型：
 
 ```cpp
-#include <iostream>
-
 template <typename T>
 class Closure {
   Closure() = delete;
@@ -293,21 +291,22 @@ class Closure<Ret(Args...)> {
  private:
   template <typename Lambda>
   static Ret invoke(void* fp, Args&&... args) {
-    return (*reinterpret_cast<Lambda*>(fp))(std::forward<Args>(args)...);
+    return (*reinterpret_cast<std::remove_reference_t<Lambda>*>(fp))(
+        std::forward<Args>(args)...);
   }
   template <typename Lambda>
   static void free(void* fp) {
-    delete reinterpret_cast<Lambda*>(fp);
+    delete reinterpret_cast<std::remove_reference_t<Lambda>*>(fp);
   }
 
  public:
   template <typename Lambda>
   Closure(Lambda&& fp) {
-    _fp = new Lambda(std::forward<Lambda>(fp));
+    _fp = new std::remove_reference_t<Lambda>(std::forward<Lambda>(fp));
     _invoke = invoke<Lambda>;
     _free = free<Lambda>;
   }
-  Closure(const Closure&) = delete;
+  Closure(const Closure& other) = delete;
   Closure(Closure&& other) {
     _fp = other._fp;
     other._fp = nullptr;
@@ -326,6 +325,203 @@ class Closure<Ret(Args...)> {
   void* _fp;
   Ret (*_invoke)(void*, Args&&...);
   void (*_free)(void*);
+};
+```
+
+然后，让我们来尝试恢复它的拷贝构造函数。原理也类似 `invoke` 和 `free`，我们要做一个模板特化的 `copy` 函数：
+
+```cpp
+template <typename T>
+class Closure {
+  Closure() = delete;
+};
+
+template <typename Ret, typename... Args>
+class Closure<Ret(Args...)> {
+ private:
+  template <typename Lambda>
+  static Ret invoke(void* fp, Args&&... args) {
+    return (*reinterpret_cast<std::remove_reference_t<Lambda>*>(fp))(
+        std::forward<Args>(args)...);
+  }
+  template <typename Lambda>
+  static void free(void* fp) {
+    delete reinterpret_cast<std::remove_reference_t<Lambda>*>(fp);
+  }
+  template <typename Lambda>
+  static void* copy(void* fp) {
+    return new std::remove_reference_t<Lambda>(
+        *reinterpret_cast<std::remove_reference_t<Lambda>*>(fp));
+  }
+
+ public:
+  template <typename Lambda>
+  Closure(Lambda&& fp) {
+    _fp = new std::remove_reference_t<Lambda>(std::forward<Lambda>(fp));
+    _invoke = invoke<Lambda>;
+    _free = free<Lambda>;
+    _copy = copy<Lambda>;
+  }
+  Closure(const Closure& other) {
+    _fp = other._copy(other._fp);
+    _invoke = other._invoke;
+    _free = other._free;
+    _copy = other._copy;
+  };
+  Closure(Closure&& other) {
+    _fp = other._fp;
+    other._fp = nullptr;
+    _invoke = other._invoke;
+    _free = other._free;
+    _copy = other._copy;
+  }
+  ~Closure() {
+    _free(_fp);
+  }
+
+  Ret operator()(Args&&... args) const {
+    return _invoke(_fp, std::forward<Args>(args)...);
+  }
+
+ private:
+  void* _fp;
+  Ret (*_invoke)(void*, Args&&...);
+  void (*_free)(void*);
+  void* (*_copy)(void*);
+};
+```
+{: highlight-lines="18-22,33" }
+
+但是，停，这里会出现一个很严重的问题。当我们让 `Closure s2 = s1` 时，我们期望它会调用 `Closure(const Closure &)` 这个拷贝构造函数，但实际上 C++ 却会选择 `Closure(Lambda &&fp)` 这个构造函数。这是因为 `Lambda&&` 是一个万能引用，它可以匹配 `Closure &` 使得它比 `const Closure &` 的重载更精确。
+
+解决这个问题的方法通常是使用 **C++20 的 concept 语法**。但是这并不是说在 C++20 之前我们就无能为力了。由于 C++ 强大的模板推导能力，我们可以借助**模板元编程（Template Metaprogramming）**来解决这个问题，而标准库就专门为此实现了 **`std::enable_if`**。关于模板元编程和 `std::enable_if`，很难用三言两语来讲清楚它们究竟是什么，如果有兴趣，可以移步到[如何在 C++ 中实现柯里化]({{ base.url }}{% link _posts/2023-7-18-cpp_currying.md %})这篇文章。而在本文中，我们只需要知道它可以解决我们的问题就行了：
+
+```cpp
+template <typename T>
+class Closure {
+  Closure() = delete;
+};
+
+template <typename Ret, typename... Args>
+class Closure<Ret(Args...)> {
+ private:
+  template <typename Lambda>
+  static Ret invoke(void* fp, Args&&... args) {
+    return (*reinterpret_cast<std::remove_reference_t<Lambda>*>(fp))(
+        std::forward<Args>(args)...);
+  }
+  template <typename Lambda>
+  static void free(void* fp) {
+    delete reinterpret_cast<std::remove_reference_t<Lambda>*>(fp);
+  }
+  template <typename Lambda>
+  static void* copy(void* fp) {
+    return new std::remove_reference_t<Lambda>(
+        *reinterpret_cast<std::remove_reference_t<Lambda>*>(fp));
+  }
+
+ public:
+  template <typename Lambda,
+            std::enable_if_t<!std::is_same_v<std::remove_reference_t<Lambda>,
+                                             Closure<Ret(Args...)>>,
+                             bool> = true>
+  Closure(Lambda&& fp) {
+    _fp = new std::remove_reference_t<Lambda>(std::forward<Lambda>(fp));
+    _invoke = invoke<Lambda>;
+    _free = free<Lambda>;
+    _copy = copy<Lambda>;
+  }
+  Closure(const Closure& other) {
+    _fp = other._copy(other._fp);
+    _invoke = other._invoke;
+    _free = other._free;
+    _copy = other._copy;
+  };
+  Closure(Closure&& other) {
+    _fp = other._fp;
+    other._fp = nullptr;
+    _invoke = other._invoke;
+    _free = other._free;
+    _copy = other._copy;
+  }
+  ~Closure() { _free(_fp); }
+
+  Ret operator()(Args&&... args) const {
+    return _invoke(_fp, std::forward<Args>(args)...);
+  }
+
+ private:
+  void* _fp;
+  Ret (*_invoke)(void*, Args&&...);
+  void (*_free)(void*);
+  void* (*_copy)(void*);
+};
+```
+{: highlight-lines="25-28" }
+
+让我们来测试一下它能不能做到闭包递归：
+
+```cpp
+#include <iostream>
+
+template <typename T>
+class Closure {
+  Closure() = delete;
+};
+
+template <typename Ret, typename... Args>
+class Closure<Ret(Args...)> {
+ private:
+  template <typename Lambda>
+  static Ret invoke(void* fp, Args&&... args) {
+    return (*reinterpret_cast<std::remove_reference_t<Lambda>*>(fp))(
+        std::forward<Args>(args)...);
+  }
+  template <typename Lambda>
+  static void free(void* fp) {
+    delete reinterpret_cast<std::remove_reference_t<Lambda>*>(fp);
+  }
+  template <typename Lambda>
+  static void* copy(void* fp) {
+    return new std::remove_reference_t<Lambda>(
+        *reinterpret_cast<std::remove_reference_t<Lambda>*>(fp));
+  }
+
+ public:
+  template <typename Lambda,
+            std::enable_if_t<!std::is_same_v<std::remove_reference_t<Lambda>,
+                                             Closure<Ret(Args...)>>,
+                             bool> = true>
+  Closure(Lambda&& fp) {
+    _fp = new std::remove_reference_t<Lambda>(std::forward<Lambda>(fp));
+    _invoke = invoke<Lambda>;
+    _free = free<Lambda>;
+    _copy = copy<Lambda>;
+  }
+  Closure(const Closure& other) {
+    _fp = other._copy(other._fp);
+    _invoke = other._invoke;
+    _free = other._free;
+    _copy = other._copy;
+  };
+  Closure(Closure&& other) {
+    _fp = other._fp;
+    other._fp = nullptr;
+    _invoke = other._invoke;
+    _free = other._free;
+    _copy = other._copy;
+  }
+  ~Closure() { _free(_fp); }
+
+  Ret operator()(Args&&... args) const {
+    return _invoke(_fp, std::forward<Args>(args)...);
+  }
+
+ private:
+  void* _fp;
+  Ret (*_invoke)(void*, Args&&...);
+  void (*_free)(void*);
+  void* (*_copy)(void*);
 };
 
 int main() {
@@ -357,33 +553,34 @@ Perfect！完美达成了我们的需求
 
 template <typename Ret, typename... Args>
 class Closure<Ret(Args...)> {
-   private:
-    template <typename Lambda>
-    static Ret invoke(void* fp, Args&&... args) {
-        return std::invoke(*reinterpret_cast<Lambda*>(fp), std::forward<Args>(args)...);
-    }
+ private:
+  template <typename Lambda>
+  static Ret invoke(void* fp, Args&&... args) {
+    return std::invoke(*reinterpret_cast<std::remove_reference_t<Lambda>*>(fp),
+                       std::forward<Args>(args)...);
+  }
 
-    ...
+  ...
 };
 
 class Test {
-    public:
-    void test() {
-        std::cout << "hello world" << std::endl;
-    }
+ public:
+  void test() {
+    std::cout << "hello world" << std::endl;
+  }
 };
 
 int main() {
-    Test t;
-    Closure<void(Test *)> f = &Test::test;
-    f(&t);
+  Test t;
+  Closure<void(Test *)> f = &Test::test;
+  f(&t);
 
-    return 0;
+  return 0;
 }
 ```
-{: highlight-lines="10" }
+{: highlight-lines="10-11" }
 
-至于 `std::invoke` 为什么有这种奇效，则涉及到一定的模板元编程知识，就不在此细讲了。
+至于 `std::invoke` 为什么有这种奇效，则涉及到一定的模板元编程知识，同样可以在[如何在 C++ 中实现柯里化]({{ base.url }}{% link _posts/2023-7-18-cpp_currying.md %})这篇文章中了解一二。
 
 当然，`std::function`{:.language-cpp} 的东西远不止这么点，不过最核心的功能已经在本文中介绍了，剩下那些边角料，有兴趣的话就请自行翻阅源代码吧~
 

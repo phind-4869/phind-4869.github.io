@@ -29,7 +29,7 @@ template <typename Ret, typename... Args>
 class Function<Ret(Args...)> {
  private:
   template <typename Callable>
-  static Ret invoke(void* callable, Args&&... args) {
+  static Ret invoke(void* callable, Args... args) {
     return std::invoke(
         *reinterpret_cast<std::remove_reference_t<Callable>*>(callable),
         std::forward<Args>(args)...);
@@ -71,13 +71,13 @@ class Function<Ret(Args...)> {
   }
   ~Function() { _free(_callable); }
 
-  Ret operator()(Args&&... args) const {
+  Ret operator()(Args... args) const {
     return _invoke(_callable, std::forward<Args>(args)...);
   }
 
  private:
   void* _callable;
-  Ret (*_invoke)(void*, Args&&...);
+  Ret (*_invoke)(void*, Args...);
   void (*_free)(void*);
   void* (*_copy)(void*);
 };
@@ -274,7 +274,7 @@ template <typename Ret, typename... Args>
 class Function<Ret(Args...)> {
  private:
   template <typename Callable>
-  static Ret invoke(void *callable, Args &&...args) {
+  static Ret invoke(void *callable, Args... args) {
     // 这里使用 ::invoke 的意思是使用全局定义的 invoke 函数
     // 而不是 Function 的成员函数 invoke
     return ::invoke(*reinterpret_cast<remove_reference_t<Callable> *>(callable),
@@ -353,7 +353,7 @@ template <size_t Idx, typename T>
 class tuple_storage {
  public:
   tuple_storage(const T &value) : value(value) {}
-  tuple_storage(T &&value) : value(std::forward<T>(value)) {}
+  tuple_storage(T &&value) : value(forward<T>(value)) {}
   T value;
 };
 
@@ -365,7 +365,7 @@ template <size_t Idx, typename T>
 class tuple_inner<Idx, T> : public tuple_storage<Idx, T> {
  public:
   tuple_inner(const T &value) : tuple_storage<Idx, T>(value) {}
-  tuple_inner(T &&value) : tuple_storage<Idx, T>(std::forward<T>(value)) {}
+  tuple_inner(T &&value) : tuple_storage<Idx, T>(forward<T>(value)) {}
 };
 
 // 对于多个值的 tuple，每次继承 tuple_inner 都会让 Idx 加一
@@ -373,11 +373,11 @@ template <size_t Idx, typename T, typename... Rest>
 class tuple_inner<Idx, T, Rest...> : public tuple_inner<Idx + 1, Rest...>,
                                      public tuple_storage<Idx, T> {
  public:
-  tuple_inner(const T &value, const Rest &...rest)
+  tuple_inner(const T &value, Rest &...rest)
       : tuple_inner<Idx + 1, Rest...>(rest...), tuple_storage<Idx, T>(value) {}
   tuple_inner(T &&value, Rest &&...rest)
-      : tuple_inner<Idx + 1, Rest...>(std::forward<Rest>(rest)...),
-        tuple_storage<Idx, T>(std::forward<T>(value)) {}
+      : tuple_inner<Idx + 1, Rest...>(forward<Rest>(rest)...),
+        tuple_storage<Idx, T>(forward<T>(value)) {}
 };
 
 // 对外暴露的 tuple 类型，本身只是 tuple_inner 的包装，没有什么特殊之处
@@ -387,7 +387,7 @@ class tuple : public tuple_inner<0, Elements...> {
   tuple(const Elements &...elements)
       : tuple_inner<0, Elements...>(elements...) {}
   tuple(Elements &&...elements)
-      : tuple_inner<0, Elements...>(std::forward<Elements>(elements)...) {}
+      : tuple_inner<0, Elements...>(forward<Elements>(elements)...) {}
 };
 
 template <>
@@ -735,6 +735,20 @@ class tuple : public tuple_inner<0, Elements...> {
 
 当 `tuple` 的类型仅为左值引用时，由于 `const` 约束对引用类型没有意义，因为引用类型自身不可改变指向，因此相比于模板构造函数，`const Element &...` 版本属于模板特化，编译器选择该版本。
 
+另一方面，`get` 的右值版本实现也需要改一改，使用 `forward` 替换 `move`:
+
+```cpp
+template <size_t Idx, typename T>
+T &&get(tuple_storage<Idx, T> &&t) {
+  return forward<T>(t.value);
+}
+
+template <size_t Idx, typename T>
+const T &&get(const tuple_storage<Idx, T> &&t) {
+  return forward<T>(t.value);
+}
+```
+
 ## 柯里化
 
 首先我们需要构造一个类似 lambda 的类型，用来表示柯里化之后的函数，因此这个类型需要保存原始函数和柯里化的参数，然后再提供 `operator()` 接受那些未参与柯里化的参数。因此，先写出基本的结构：
@@ -751,13 +765,12 @@ class Curried<Function<Ret(CurriedArgs..., UncurriedArgs...)>, CurriedArgs...> {
   Curried(Callable &&callable, tuple<CurriedArgs...> &&args)
       : _callable(forward<Callable>(callable)), _curriedArgs(move(args)) {}
 
-  // 提供 operator() 接受剩余的参数，这里使用模板来处理左值参数和右值参数的问题
-  template <typename... Args>
-  Ret operator()(Args &&...args) const {
-    auto uncurriedArgs = tuple<UncurriedArgs...>(forward<Args>(args)...);
+  // 提供 operator() 接受剩余的参数
+  Ret operator()(UncurriedArgs... args) const {
+    auto uncurriedArgs =
+        tuple<UncurriedArgs...>(forward<UncurriedArgs>(args)...);
     return apply(_callable, tuple_cat(_curriedArgs, move(uncurriedArgs)));
   };
-
  private:
   // 保存原始函数
   Function<Ret(CurriedArgs..., UncurriedArgs...)> _callable;
@@ -780,9 +793,9 @@ class Curried<Callable, tuple<CurriedArgs...>, tuple<UncurriedArgs...>> {
   Curried(CallableT &&callable, tuple<CurriedArgs...> &&args)
       : _callable(forward<CallableT>(callable)), _curriedArgs(move(args)) {}
 
-  template <typename... Args>
-  auto operator()(Args &&...args) const {
-    auto uncurriedArgs = tuple<UncurriedArgs...>(forward<Args>(args)...);
+  auto operator()(UncurriedArgs... args) const {
+    auto uncurriedArgs =
+        tuple<UncurriedArgs...>(forward<UncurriedArgs>(args)...);
     return apply(_callable, tuple_cat(_curriedArgs, move(uncurriedArgs)));
   };
 
@@ -795,15 +808,22 @@ class Curried<Callable, tuple<CurriedArgs...>, tuple<UncurriedArgs...>> {
 但是当我们想要封装一个柯里化函数时，又有新的问题出现了：
 
 ```cpp
-template <typename Ret, typename... CurriedArgs, typename... UncurriedArgs,
-          typename... Args>
-auto curry(Function<Ret(CurriedArgs..., UncurriedArgs...)> &&callable,
+template <typename Ret, typename... CurriedArgs, typename... UncurriedArgs>
+auto curry(Function<Ret(CurriedArgs..., UncurriedArgs...)> callable,
+           UncurriedArgs... args) {}
+```
+
+我们尝试写出柯里化函数的声明，但是这里有一个严重的问题：对于类型 `Function<Ret(CurriedArgs..., UncurriedArgs...)>` 而言，编译器无法判断 `CurriedArgs` 和 `UncurriedArgs` 的分界线究竟在哪，即使我们后面还引入了 `UncurriedArgs ...args`。
+
+那么我们需要一个办法来让编译器知道如何划分两个参数包的界限，我们引入一个新的参数包:
+
+```cpp
+template <typename Ret, typename... CurriedArgs, typename... UncurriedArgs, typename... Args>
+auto curry(Function<Ret(CurriedArgs..., UncurriedArgs...)> callable,
            Args &&...args) {}
 ```
 
-我们尝试写出柯里化函数的声明，但是这里有一个严重的问题：对于类型 `Function<Ret(CurriedArgs..., UncurriedArgs...)>` 而言，编译器无法判断 `CurriedArgs` 和 `UncurriedArgs` 的分界线究竟在哪。但是我们知道，**`CurriedArgs` 的参数数量就等于 `Args` 的参数数量**。
-
-这样的话，我们需要有办法可以得到一个模板参数包的前 N 个参数，以及去除前 N 个参数之后剩余的参数。
+`Args` 参数包是可以正常推导出来的，并且我们知道 `Args` 的包大小等于 `UncurriedArgs` 的包大小。这样的话，我们需要有办法可以得到一个模板参数包的前 N 个参数，以及去除前 N 个参数之后剩余的参数。
 
 当然，有了前面一系列的模板元编程的经验，这对我们来说并不算难，我们可以借助 `tuple` 和 `integer_sequence` 的帮助来实现 `args_head`：
 
@@ -894,22 +914,22 @@ struct Curry<tuple<CurriedArgs...>, tuple<UncurriedArgs...>> {
 
 // 左值版本
 template <typename Ret, typename... FullArgs, typename... Args>
-auto curry(Function<Ret(FullArgs...)> &&callable, Args &&...args) {
-  using CurriedArgsTuple = args_head_t<sizeof...(Args), FullArgs...>;
-  using UncurriedArgsTuple = args_except_t<sizeof...(Args), FullArgs...>;
-  using CurryWrapper = Curry<CurriedArgsTuple, UncurriedArgsTuple>;
-
-  return CurryWrapper::curry_inner(move(callable), forward<Args>(args)...);
-}
-
-// 右值版本，和上面那个函数唯一的区别就是 callable 是右值
-template <typename Ret, typename... FullArgs, typename... Args>
 auto curry(const Function<Ret(FullArgs...)> &callable, Args &&...args) {
   using CurriedArgsTuple = args_head_t<sizeof...(Args), FullArgs...>;
   using UncurriedArgsTuple = args_except_t<sizeof...(Args), FullArgs...>;
   using CurryWrapper = Curry<CurriedArgsTuple, UncurriedArgsTuple>;
 
   return CurryWrapper::curry_inner(callable, forward<Args>(args)...);
+}
+
+// 右值版本，和上面那个函数唯一的区别就是 callable 是右值
+template <typename Ret, typename... FullArgs, typename... Args>
+auto curry(Function<Ret(FullArgs...)> &&callable, Args &&...args) {
+  using CurriedArgsTuple = args_head_t<sizeof...(Args), FullArgs...>;
+  using UncurriedArgsTuple = args_except_t<sizeof...(Args), FullArgs...>;
+  using CurryWrapper = Curry<CurriedArgsTuple, UncurriedArgsTuple>;
+
+  return CurryWrapper::curry_inner(move(callable), forward<Args>(args)...);
 }
 ```
 

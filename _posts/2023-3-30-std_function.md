@@ -24,16 +24,16 @@ int main() {
 
 `std::function`{:.language-cpp} 究竟有什么魔力，可以让 lambda 进行递归？鲁迅说的好，**要想明白一个东西的原理，最好的办法就是从头实现一遍**。鲁迅：这是周树人说的，不是我说的。
 
-让我们先简单分析一下，假设我们实现的类名为 `Closure`，那么我们需要知道 lambda 的**返回值类型**和**参数类型**，这样才能重载 `Closure` 的 `operator()`{:.language-cpp} 以调用 lambda 函数（注：为了保持参数的引用类型，后续所有代码都会使用万能引用以及 `std::forward`{:.language-cpp} 进行完美转发）：
+让我们先简单分析一下，假设我们实现的类名为 `Closure`，那么我们需要知道 lambda 的**返回值类型**和**参数类型**，这样才能重载 `Closure` 的 `operator()`{:.language-cpp} 以调用 lambda 函数（注：为了保持参数的引用类型，后续所有代码都会使用 `std::forward`{:.language-cpp} 进行完美转发）：
 
 ```cpp
 template <typename Ret, typename... Args>
 class Closure {
  public:
   typedef Ret (*Func)(Args...);
-  Closure(Func&& fp) : _fp(std::forward<Func>(fp)) {}
+  Closure(Func fp) : _fp(fp) {}
 
-  Ret operator()(Args&&... args) const { return _fp(std::forward<Args>(args)...); }
+  Ret operator()(Args... args) const { return _fp(std::forward<Args>(args)...); }
 
  private:
   Func _fp;
@@ -49,9 +49,9 @@ template <typename Ret, typename... Args>
 class Closure {
  public:
   typedef Ret (*Func)(Args...);
-  Closure(Func&& fp) : _fp(std::forward<Func>(fp)) {}
+  Closure(Func fp) : _fp(fp) {}
 
-  Ret operator()(Args&&... args) const { return _fp(std::forward<Args>(args)...); }
+  Ret operator()(Args... args) const { return _fp(std::forward<Args>(args)...); }
 
  private:
   Func _fp;
@@ -88,9 +88,9 @@ template <typename Ret, typename... Args>
 class Closure<Ret(Args...)> {
  public:
   typedef Ret (*Func)(Args...);
-  Closure(Func&& fp) : _fp(std::forward<Func>(fp)) {}
+  Closure(Func fp) : _fp(fp) {}
 
-  Ret operator()(Args&&... args) const { return _fp(std::forward<Args>(args)...); }
+  Ret operator()(Args... args) const { return _fp(std::forward<Args>(args)...); }
 
  private:
   Func _fp;
@@ -123,7 +123,7 @@ class Closure<Ret(Args...)> {
   template<typename Lambda>
   Closure(Lambda&& fp) : _fp(std::forward<Lambda>(fp)) {}
 
-  Ret operator()(Args&&... args) const { return _fp(std::forward<Args>(args)...); }
+  Ret operator()(Args... args) const { return _fp(std::forward<Args>(args)...); }
 
  private:
   Func _fp;
@@ -196,7 +196,7 @@ class Closure<Ret(Args...)> {
  private:
   // 注意到该函数的类型是 Ret (*)(void*, Args&&...)，并不包含 Lambda 模板类型
   template <typename Lambda>
-  static Ret invoke(void* fp, Args&&... args) {
+  static Ret invoke(void* fp, Args... args) {
     // 在函数体内使用 Lambda 模板类型，而不是让函数的调用者提供
     return (*reinterpret_cast<Lambda*>(fp))(std::forward<Args>(args)...);
   }
@@ -215,7 +215,7 @@ class Closure<Ret(Args...)> {
     _invoke = other._invoke;
   }
 
-  Ret operator()(Args&&... args) const {
+  Ret operator()(Args... args) const {
     // 最终实际调用的是模板特化后的 invoke 函数
     return _invoke(_fp, std::forward<Args>(args)...);
   }
@@ -223,7 +223,7 @@ class Closure<Ret(Args...)> {
  private:
   void* _fp;
   // _invoke 指针不依赖 lambda 函数的实际类型
-  Ret (*_invoke)(void*, Args&&...);
+  Ret (*_invoke)(void*, Args...);
 };
 ```
 
@@ -239,7 +239,7 @@ template <typename Ret, typename... Args>
 class Closure<Ret(Args...)> {
  private:
   template <typename Lambda>
-  static Ret invoke(void* fp, Args&&... args) {
+  static Ret invoke(void* fp, Args... args) {
     return (*reinterpret_cast<Lambda*>(fp))(std::forward<Args>(args)...);
   }
   template <typename Lambda>
@@ -266,14 +266,14 @@ class Closure<Ret(Args...)> {
     _free(_fp);
   }
 
-  Ret operator()(Args&&... args) const {
+  Ret operator()(Args... args) const {
     // 最终实际调用的是模板特化后的 invoke 函数
     return _invoke(_fp, std::forward<Args>(args)...);
   }
 
  private:
   void* _fp;
-  Ret (*_invoke)(void*, Args&&...);
+  Ret (*_invoke)(void*, Args...);
   void (*_free)(void*);
 };
 ```
@@ -290,7 +290,7 @@ template <typename Ret, typename... Args>
 class Closure<Ret(Args...)> {
  private:
   template <typename Lambda>
-  static Ret invoke(void* fp, Args&&... args) {
+  static Ret invoke(void* fp, Args... args) {
     return (*reinterpret_cast<std::remove_reference_t<Lambda>*>(fp))(
         std::forward<Args>(args)...);
   }
@@ -317,13 +317,13 @@ class Closure<Ret(Args...)> {
     _free(_fp);
   }
 
-  Ret operator()(Args&&... args) const {
+  Ret operator()(Args... args) const {
     return _invoke(_fp, std::forward<Args>(args)...);
   }
 
  private:
   void* _fp;
-  Ret (*_invoke)(void*, Args&&...);
+  Ret (*_invoke)(void*, Args...);
   void (*_free)(void*);
 };
 ```
@@ -340,7 +340,7 @@ template <typename Ret, typename... Args>
 class Closure<Ret(Args...)> {
  private:
   template <typename Lambda>
-  static Ret invoke(void* fp, Args&&... args) {
+  static Ret invoke(void* fp, Args... args) {
     return (*reinterpret_cast<std::remove_reference_t<Lambda>*>(fp))(
         std::forward<Args>(args)...);
   }
@@ -379,13 +379,13 @@ class Closure<Ret(Args...)> {
     _free(_fp);
   }
 
-  Ret operator()(Args&&... args) const {
+  Ret operator()(Args... args) const {
     return _invoke(_fp, std::forward<Args>(args)...);
   }
 
  private:
   void* _fp;
-  Ret (*_invoke)(void*, Args&&...);
+  Ret (*_invoke)(void*, Args...);
   void (*_free)(void*);
   void* (*_copy)(void*);
 };
@@ -406,7 +406,7 @@ template <typename Ret, typename... Args>
 class Closure<Ret(Args...)> {
  private:
   template <typename Lambda>
-  static Ret invoke(void* fp, Args&&... args) {
+  static Ret invoke(void* fp, Args... args) {
     return (*reinterpret_cast<std::remove_reference_t<Lambda>*>(fp))(
         std::forward<Args>(args)...);
   }
@@ -446,13 +446,13 @@ class Closure<Ret(Args...)> {
   }
   ~Closure() { _free(_fp); }
 
-  Ret operator()(Args&&... args) const {
+  Ret operator()(Args... args) const {
     return _invoke(_fp, std::forward<Args>(args)...);
   }
 
  private:
   void* _fp;
-  Ret (*_invoke)(void*, Args&&...);
+  Ret (*_invoke)(void*, Args...);
   void (*_free)(void*);
   void* (*_copy)(void*);
 };
@@ -473,7 +473,7 @@ template <typename Ret, typename... Args>
 class Closure<Ret(Args...)> {
  private:
   template <typename Lambda>
-  static Ret invoke(void* fp, Args&&... args) {
+  static Ret invoke(void* fp, Args... args) {
     return (*reinterpret_cast<std::remove_reference_t<Lambda>*>(fp))(
         std::forward<Args>(args)...);
   }
@@ -513,13 +513,13 @@ class Closure<Ret(Args...)> {
   }
   ~Closure() { _free(_fp); }
 
-  Ret operator()(Args&&... args) const {
+  Ret operator()(Args... args) const {
     return _invoke(_fp, std::forward<Args>(args)...);
   }
 
  private:
   void* _fp;
-  Ret (*_invoke)(void*, Args&&...);
+  Ret (*_invoke)(void*, Args...);
   void (*_free)(void*);
   void* (*_copy)(void*);
 };
@@ -555,7 +555,7 @@ template <typename Ret, typename... Args>
 class Closure<Ret(Args...)> {
  private:
   template <typename Lambda>
-  static Ret invoke(void* fp, Args&&... args) {
+  static Ret invoke(void* fp, Args... args) {
     return std::invoke(*reinterpret_cast<std::remove_reference_t<Lambda>*>(fp),
                        std::forward<Args>(args)...);
   }

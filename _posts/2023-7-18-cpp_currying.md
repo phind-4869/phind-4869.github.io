@@ -195,20 +195,22 @@ constexpr remove_reference_t<T> &&move(T &&t) noexcept {
 
 ```cpp
 template <typename Callable>
-auto invoke(Callable &&callable) {}
+decltype(auto) invoke(Callable &&callable) {}
 
 template <typename Callable, typename First>
-auto invoke(Callable &&callable, First &&first) {}
+decltype(auto) invoke(Callable &&callable, First &&first) {}
 
 template <typename Callable, typename First, typename... Rest>
-auto invoke(Callable &&callable, First &&first, Rest &&...rest) {}
+decltype(auto) invoke(Callable &&callable, First &&first, Rest &&...rest) {}
 ```
+
+注意：我们在此处使用 `decltype(auto)` 作为返回值类型，是因为我们不知道返回值类型是否包含引用，而仅凭 `auto` 是无法处理引用的。当 `decltype(auto)` 作为返回值时，约等于将返回值表达式替换到 `auto` 位置进行类型推导，因此可以自动处理返回值为引用的情况。
 
 其中第一种最为简单，因为这种形式的调用没有任何参数，必不可能是成员函数，所以我们直接正常调用即可：
 
 ```cpp
 template <typename Callable>
-auto invoke(Callable &&callable) {
+decltype(auto) invoke(Callable &&callable) {
   return callable();
 }
 ```
@@ -245,21 +247,22 @@ using callable_tag_t =
 
 // 注意该重载的第一个参数是 normal_function
 template <typename Callable, typename... Args>
-auto invoke_inner(normal_function, Callable &&callable, Args &&...args) {
+decltype(auto) invoke_inner(normal_function, Callable &&callable,
+                            Args &&...args) {
   return callable(forward<Args>(args)...);
 }
 
 // 而该重载的第一个参数是 member_function，通过这个 tag 来区分成员函数
 template <typename Callable, typename Caller, typename... Args>
-auto invoke_inner(member_function, Callable &&callable, Caller &&caller,
-                  Args &&...args) {
+decltype(auto) invoke_inner(member_function, Callable &&callable,
+                            Caller &&caller, Args &&...args) {
   return (caller->*callable)(forward<Args>(args)...);
 }
 
 // 真正的 invoke 函数，使用 callable_tag_t 作为 invoke_inner
 // 的第一个参数来区分普通函数与成员函数
 template <typename Callable, typename... Args>
-auto invoke(Callable &&callable, Args &&...args) {
+decltype(auto) invoke(Callable &&callable, Args &&...args) {
   return invoke_inner(callable_tag_t<Callable>{}, callable,
                       forward<Args>(args)...);
 }
@@ -497,12 +500,14 @@ constexpr size_t tuple_size_v = tuple_size<remove_reference_t<T>>::size;
 ```cpp
 // 用 apply_inner 隐藏一下 integer_sequence
 template <typename Callable, typename Tuple, size_t... Idx>
-auto apply_inner(Callable &&callable, Tuple &&tuple, integer_sequence<Idx...>) {
-  invoke(forward<Callable>(callable), get<Idx>(forward<Tuple>(tuple))...);
+decltype(auto) apply_inner(Callable &&callable, Tuple &&tuple,
+                           integer_sequence<Idx...>) {
+  return invoke(forward<Callable>(callable),
+                get<Idx>(forward<Tuple>(tuple))...);
 }
 
 template <typename Callable, typename Tuple>
-auto apply(Callable &&callable, Tuple &&tuple) {
+decltype(auto) apply(Callable &&callable, Tuple &&tuple) {
   return apply_inner(forward<Callable>(callable), forward<Tuple>(tuple),
                      make_index_sequence<tuple_size_v<Tuple>>{});
 }
@@ -793,7 +798,7 @@ class Curried<Callable, tuple<CurriedArgs...>, tuple<UncurriedArgs...>> {
   Curried(CallableT &&callable, tuple<CurriedArgs...> &&args)
       : _callable(forward<CallableT>(callable)), _curriedArgs(move(args)) {}
 
-  auto operator()(UncurriedArgs... args) const {
+  decltype(auto) operator()(UncurriedArgs... args) const {
     auto uncurriedArgs =
         tuple<UncurriedArgs...>(forward<UncurriedArgs>(args)...);
     return apply(_callable, tuple_cat(_curriedArgs, move(uncurriedArgs)));

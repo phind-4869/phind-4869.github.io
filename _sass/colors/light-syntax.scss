@@ -5,14 +5,14 @@
 @mixin light-syntax {
   /* based on: <https://raw.githubusercontent.com/jwarby/pygments-css/master/github.css> */
   .highlighter-rouge .hll { background-color: #ffffcc; }
-  .highlighter-rouge .c { color: #717165; font-style: italic; } /* Comment */
+  .highlighter-rouge .c { color: #187e14; font-style: italic; } /* Comment */
   .highlighter-rouge .err { color: #a61717; background-color: #e3d2d2; } /* Error */
   .highlighter-rouge .k { color: #000000; font-weight: bold; } /* Keyword */
   .highlighter-rouge .o { color: #000000; font-weight: bold; } /* Operator */
-  .highlighter-rouge .cm { color: #717165; font-style: italic; } /* Comment.Multiline */
+  .highlighter-rouge .cm { color: #187e14; font-style: italic; } /* Comment.Multiline */
   .highlighter-rouge .cp { color: #707070; font-style: italic; } /* Comment.Preproc */
-  .highlighter-rouge .c1 { color: #717165; font-style: italic; } /* Comment.Single */
-  .highlighter-rouge .cs { color: #707070; font-weight: bold; font-style: italic; } /* Comment.Special */
+  .highlighter-rouge .c1 { color: #187e14; font-style: italic; } /* Comment.Single */
+  .highlighter-rouge .cs { color: #187e14; font-weight: bold; font-style: italic; } /* Comment.Special */
   .highlighter-rouge .gd { color: #d01040; background-color: #ffdddd; } /* Generic.Deleted */
   .highlighter-rouge .ge { color: #000000; font-style: italic; } /* Generic.Emph */
   .highlighter-rouge .gr { color: #aa0000; } /* Generic.Error */

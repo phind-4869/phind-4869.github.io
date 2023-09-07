@@ -2,8 +2,8 @@
 * The syntax highlight.
 */
 
-@import 'colors/light-syntax';
-@import 'colors/dark-syntax';
+@import 'colors/syntax-light';
+@import 'colors/syntax-dark';
 
 html {
   @media (prefers-color-scheme: light) {
@@ -62,8 +62,7 @@ html {
   }
 
   overflow: auto;
-  padding-top: 0.5rem;
-  padding-bottom: 1rem;
+  padding-bottom: 0.75rem;
 
   pre {
     font-family: "Fira Code", "Microsoft Yahei", monospace;
@@ -72,21 +71,28 @@ html {
     font-size: $code-font-size;
     line-height: 1.4rem;
     word-wrap: normal; /* Fixed Safari overflow-x */
-    color: var(--code-snippets-color);
   }
 
   table {
-    td pre {
-      font-family: "Fira Code", "Microsoft Yahei", monospace;
-      font-variant-ligatures: normal;
-      overflow: visible; /* Fixed iOS safari overflow-x */
-      word-break: normal; /* Fixed iOS safari linenos code break */
+    td {
+      &:first-child {
+        display: inline-block;
+        margin-left: 1rem;
+        margin-right: 0.75rem;
+      }
+
+      &:last-child {
+        padding-right: 2rem !important;
+      }
+
+      pre {
+        overflow: visible; /* Fixed iOS safari overflow-x */
+        word-break: normal; /* Fixed iOS safari linenos code break */
+      }
     }
   }
 
   .lineno {
-    padding-right: 0.5rem;
-    min-width: 2.2rem;
     text-align: right;
     color: var(--highlight-lineno-color);
     -webkit-user-select: none;
@@ -103,6 +109,7 @@ code {
   hyphens: none;
   font-family: "Fira Code", "Microsoft Yahei", monospace;
   font-variant-ligatures: none;
+  color: var(--code-color);
 
   &.highlighter-rouge {
     // font-size: $code-font-size;
@@ -154,9 +161,14 @@ div[class^='language-'] {
   box-shadow: var(--language-border-color) 0 0 0 1px;
 
   .post-content > & {
-    @include ml-mr(-1.25rem);
+    @include ml-mr(-1rem);
 
     border-radius: 0;
+  }
+
+  .highlight {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
   }
 }
 
@@ -166,12 +178,13 @@ div {
   &.language-plaintext,
   &.language-console,
   &.language-terminal {
-    pre.lineno {
-      display: none;
-    }
+    td:first-child {
+      padding: 0 !important;
+      margin-right: 0;
 
-    td.rouge-code {
-      padding-left: 1.5rem;
+      .lineno {
+        display: none;
+      }
     }
   }
 }
@@ -179,21 +192,21 @@ div {
 .code-header {
   @extend %no-cursor;
 
-  $code-header-height: 2.25rem;
-
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: $code-header-height;
-  margin-left: 1rem;
+  margin-left: 0.75rem;
   margin-right: 0.5rem;
 
   /* the label block */
   span {
+    line-height: $code-header-height;
+
     /* label icon */
     i {
       font-size: 1rem;
-      margin-right: 0.5rem;
+      width: $code-icon-width;
       color: var(--code-header-icon-color);
 
       &.small {
@@ -274,19 +287,25 @@ div {
     .code-header {
       @include ml-mr(0);
 
-      &::before {
-        $dot-size: 0.75rem;
-        $dot-margin: 0.5rem;
+      $dot-margin: calc($code-header-height / 2);
 
+      &::before {
         content: '';
         display: inline-block;
-        margin-left: 1rem;
-        width: $dot-size;
-        height: $dot-size;
+        margin-left: $dot-margin;
+        width: $code-dot-size;
+        height: $code-dot-size;
         border-radius: 50%;
         background-color: var(--code-header-muted-color);
-        box-shadow: ($dot-size + $dot-margin) 0 0 var(--code-header-muted-color),
-          ($dot-size + $dot-margin) * 2 0 0 var(--code-header-muted-color);
+        box-shadow: ($code-dot-size + $code-dot-gap) 0 0
+            var(--code-header-muted-color),
+          ($code-dot-size + $code-dot-gap) * 2 0 0
+            var(--code-header-muted-color);
+      }
+
+      span {
+        // center the text of label
+        margin-left: calc(($dot-margin + $code-dot-size) / 2 * -1);
       }
     }
   }

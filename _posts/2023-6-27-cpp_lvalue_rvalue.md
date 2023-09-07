@@ -118,7 +118,7 @@ void test2() {
 
 * `std::move(a)`{:.language-cpp} 是亡值
 * `static_cast<char &&>(ch)`{:.language-cpp} 是亡值
-* `a[n]`{:.language-cpp} 当 `a` 是亡值数组时为亡值。注：按照标准，当 `n` 是亡值数组时 `a[n]`{:.language-cpp} 也是亡值，然而此处限定了内建下标运算，在我的印象中应该不存在可以接收数组类型作为下标的内建下标运算。。。
+* `a[n]`{:.language-cpp} 当 `a` 或 `n` 是亡值数组时为亡值（插播一条冷知识：C++ 标准中 `arr[1]` 和 `1[arr]` 是等效写法）。
 * `a.m`{:.language-cpp} 当 `a` 是亡值且 `m` 是非引用类型且非静态成员时为亡值（就是类型不是 `T&` 或者 `T&&` 或者带 `static` 的成员）。
 * `a.*mp`{:.language-cpp} 当 `a` 是亡值时。
 

@@ -19,7 +19,7 @@ platforms:
 
   - type: QQ
     icon: "icon-QQ"
-    link: "http://connect.qq.com/widget/shareqq/index.html?url=URL&title=TITLE"
+    link: "https://connect.qq.com/widget/shareqq/index.html?url=URL&title=TITLE"
 
   - type: QQ 空间
     icon: "icon-qzone"
@@ -27,4 +27,4 @@ platforms:
 
   - type: 微博
     icon: "icon-weibo"
-    link: "http://service.weibo.com/share/share.php?title=TITLE&url=URL"
+    link: "https://service.weibo.com/share/share.php?title=TITLE&url=URL"

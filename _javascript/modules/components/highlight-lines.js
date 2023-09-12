@@ -27,10 +27,8 @@ function highlightLinesInner(codeBlock, highlight_lines) {
           let hll_node = document.createElement('span');
           hll_node.setAttribute('class', 'hll');
           codeBlock.insertBefore(hll_node, current_line);
-          for (let next = hll_node.nextSibling; next != subNodes[i]; next = hll_node.nextSibling) {
-            console.log(next);
+          for (let next = hll_node.nextSibling; next != subNodes[i]; next = hll_node.nextSibling)
             hll_node.appendChild(next);
-          }
           hll_node.appendChild(subNodes[i]);
         }
         current_line = subNodes[i + 1];

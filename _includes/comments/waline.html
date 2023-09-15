@@ -1,8 +1,8 @@
 <script src="{{ site.data.origin[type].waline.js | relative_url }}"></script>
 <link rel="stylesheet" href="{{ site.data.origin[type].waline.css | relative_url }}" />
 <div id="waline"></div>
-<script>
-  $(function() {
+<script type="text/javascript">
+  (function() {
     const locale = {
       placeholder: '{{ site.comments.waline.placeholder }}',
     };
@@ -27,5 +27,5 @@
     let style = document.createElement('style');
     style.textContent = cssContentSelectedDark;
     head.appendChild(style);
-  });
+  })();
 </script>

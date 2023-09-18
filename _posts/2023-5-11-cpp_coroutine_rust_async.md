@@ -252,8 +252,7 @@ where
         F: Fn(Arc<Mutex<u32>>) -> Fut,
     {
         let value = Arc::new(Mutex::new(0));
-        let value_clone = Arc::clone(&value);
-        let fut = Box::pin(f(value_clone));
+        let fut = Box::pin(f(Arc::clone(&value)));
         let waker = Waker::from(Arc::new(EmptyWaker));
         Self { fut, value, waker }
     }
@@ -334,8 +333,7 @@ fn fibonacci() -> impl FnMut() -> u32 {
             F: Fn(Arc<Mutex<u32>>) -> Fut,
         {
             let value = Arc::new(Mutex::new(0));
-            let value_clone = Arc::clone(&value);
-            let fut = Box::pin(f(value_clone));
+            let fut = Box::pin(f(Arc::clone(&value)));
             let waker = Waker::from(Arc::new(EmptyWaker));
             Self { fut, value, waker }
         }

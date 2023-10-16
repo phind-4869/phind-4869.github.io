@@ -3,9 +3,6 @@
 # 导入主题
 theme: jekyll-theme-chirpy
 
-# 仅当你的站点类型是 Github Pages 项目并且没有自定义域名时，修改下面的值为 '/项目名'。
-baseurl: ""
-
 # 站点的语言 › https://www.w3.org/International/questions/qa-choosing-language-tags
 # 如果在文件夹 `_data/locales` 下存在同名文件，则布局语言也会改变，
 # 否则，布局语言使用默认值 'en'。
@@ -23,7 +20,8 @@ tagline: Nichts Hsu # 副标题
 description: >- # 由 seo meta 和 atom feed 使用
   Nichts Hsu 的个人博客
 
-# 填入你的网站的协议和域名，例如，'https://username.github.io'
+# 填入你的网站的协议和域名.
+# 例如，'https://username.github.io'，注意不要以 '/' 结尾。
 url: "https://nihil.cc"
 
 author: Nichts Hsu # 全名
@@ -143,6 +141,9 @@ pwa:
 # 每一页的帖子数量
 paginate: 10
 
+# 网站的基础 URL
+baseurl: ""
+
 # ------------ 下面的设置不建议修改 ------------------
 
 kramdown:
@@ -214,7 +215,6 @@ exclude:
   - docs
   - tools
   - README.md
-  - CHANGELOG.md
   - LICENSE
   - rollup.config.js
   - package*.json

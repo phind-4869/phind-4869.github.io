@@ -1,6 +1,6 @@
 import { basic, initSidebar, initTopbar } from './modules/layouts';
 import {
-  imgLazy,
+  loadImg,
   imgPopup,
   initLocaleDatetime,
   initClipboard,
@@ -12,14 +12,14 @@ import {
   runRust
 } from './modules/plugins';
 
-basic();
 initSidebar();
 initTopbar();
-imgLazy();
+loadImg();
 imgPopup();
 initLocaleDatetime();
 initClipboard();
 toc();
+basic();
 highlightLines();
 runCpp();
 runJavascript();

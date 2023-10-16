@@ -24,8 +24,3 @@ gem "http_parser.rb", "~> 0.6.0", :platforms => [:jruby]
 
 gem "jekyll-archives", path: ".gems/jekyll-archives"
 gem 'jekyll-target-blank'
-
-# Lock jekyll-sass-converter to 2.x on Linux-musl
-if RUBY_PLATFORM =~ /linux-musl/
-  gem "jekyll-sass-converter", "~> 2.0"
-end

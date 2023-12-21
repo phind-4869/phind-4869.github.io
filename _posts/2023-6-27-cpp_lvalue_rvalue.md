@@ -6,7 +6,7 @@ tags: [c++, 编程语言, 教程]     # TAG names should always be lowercase
 img_path: /assets/img/lvalue_rvalue
 ---
 
-## C 语言：左值与右值
+## C：左值与右值
 
 最初，C 语言中的**左值（lvalue）**意味着任何可以赋值的东西，因为它们可以放在赋值等号的左边，因此它们被命名为左值；相反地，那些只能放在赋值等号右边的东西就被称为**右值（rvalue）**。
 
@@ -188,15 +188,13 @@ int main() {
 
 你会发现一个很神奇的事：先打印了 `"What will happen if I access ref.p: "`，后打印 `"~Test()"`。这说明返回的纯右值所转换成的亡值，其生命周期被扩大到了整个 `main()` 函数的函数体。从另一个角度来理解，这里发生的事情类似于使用了一个临时的匿名变量储存了这个纯右值（注意这里的措辞是“类似于”，并不是说一定是这样实现的）。
 
-## C++：字符串字面量
+## C：复合字面量
 
-绝大部分字面量（如 `12`{:.language-cpp}, `true`{:.language-cpp}, `nullptr`{:.language-cpp} 等）都是纯右值。
+在 C++ 中，绝大部分字面量（如 `12`{:.language-cpp}, `true`{:.language-cpp}, `nullptr`{:.language-cpp} 等）都是纯右值。但是有一个例外，**字符串字面量（string literal）是左值**。
 
-但是有一个例外，**字符串字面量（string literal）是左值**。
+在谈论为什么字符串字面量是左值之前，我们需要先来了解 C 语言中的一个概念：**复合字面量（compound literal）**。复合字面量是形如 `(T){ ... }` 形式的字面量，其中我们最为关心的是当 T 为数组时的形式：`(int[]) { 1, 2, 3 }`{:.language-c}，**该表达式在 C 语言中是一个左值**。
 
-在谈论为什么字符串字面量是左值之前，我们需要先来了解 C 语言中的一个概念：**复合字面量（compound literal）**。复合字面量是形如 `(T){ ... }` 形式的字面量，其中我们最为关心的是当 T 为数组时的形式：`(int[]) { 1, 2, 3 }`{:.language-c}，该表达式在 C 与 C++ 中的类别截然不同：在 C 语言中，它是一个左值，而在 C++ 中，它是一个右值。
-
-这意味着，下面这串代码，在 C 语言中是完全合法合规已定义的行为，而在 C++ 中，是无法通过编译的：
+这意味着，下面这串代码，在 C 语言中是完全合法合规已定义的行为：
 
 ```c
 #include <stdio.h>
@@ -225,28 +223,43 @@ int main() {
 > }
 > ```
 
-可以看到 GCC 的实现方式是在当前域定义了一个临时的变量作为复合字面量的值。
+可以看到 GCC 的实现方式是在当前域定义了一个临时的变量作为复合字面量的值，因此它是左值。
 
-而在 C++ 中，不再有复合字面量的概念，尽管仍然可以写出 `(T) { ... }` 的表达式，但是该表达式已经被视为**对花括号初始化的显式类型转换**从而返回一个临时值，自然，该临时值是纯右值且其生命周期不会超过当前语句。由于变量 `p` 的类型是指针，因此这里还会发生数组到指针的隐式类型转换，然而取址运算的操作数必须是左值，因此 C++ 拒绝编译 `int *p = (int[]){1, 2, 3};`{:.language-c}。
+## C++：字符串字面量
 
-事实上，字符串字面量可以视为当 `T` 为 `const char []`{:.language-cpp} 类型时的特例。虽然 C++ 去掉了绝大部分复合字面量的概念，但是仍然对字符串字面量进行了保留，因此我们仍然可以在 C++ 中用字符串字面量写出一些只有左值能做到的事情：
+在 C++ 中，不再有复合字面量的概念。在 GCC 的扩展语法中，虽然仍然可以使用复合字面量，但是复合字面量表达式被视为返回一个临时值，该临时值是**纯右值**且其生命周期不会超过当前语句。由于变量 `p` 的类型是指针，因此这里还会发生数组到指针的隐式类型转换，然而取址运算的操作数必须是左值，因此 C++（带有 GCC 扩展）将拒绝编译 `int *p = (int[]){1, 2, 3};`{:.language-c}。
+
+顺便一提，即使没有 GCC 扩展，我们也可以在 C++ 中写出纯右值数组。
+
+```cpp
+void test_array_prvalue(int (&&a)[4]) {}
+
+// 方案一，基于 typedef 或 using
+typedef int arr_t[4]; // 或
+using arr_t = int[4];
+test_array_prvalue(arr_t{1, 2, 3, 4});
+
+// 方案二，基于 type_identity
+#include <type_traits>
+test_array_prvalue(std::type_identity_t<int[]>{1, 2, 3, 4});
+```
+
+若想在 GCC 中进行测试，可以添加 `-pedantic-errors` 作为编译选项，该选项会让 GCC 禁止编译所有非标准的语法。
+
+事实上，字符串字面量可以视为当 `T` 为 `const char []`{:.language-cpp} 类型时复合字面量的一种特例。虽然 C++ 去掉了复合字面量的概念，但是仍然对字符串字面量进行了保留，因此我们仍然可以在 C++ 中用字符串字面量写出一些只有左值能做到的事情：
 
 ```cpp
 // 字符串字面量数组隐式转换为指针
 const char *pstr = "hello world!";
 
-// 将字符串字面量绑定在非 const 限定的左值引用上
-typedef const char string_literal_t[];
-string_literal_t &strref = "hello world!";
+// 字符串字面量可以取址
+auto pstr = &("hello world");
+// auto parr = &(arr_t{1, 2, 3, 4}); // 而纯右值数组则无法取址
 ```
 
-这时候可能就有人要说了：`strref` 是一个数组类型的左值引用，它也不能被用于赋值，那它和以前说过的 const 限定的左值引用有啥区别呢？为什么后者就算是纯右值临时量实质化转换变成亡值，前者就不是呢？
+某种意义上来说，这也属于 C++ 历史包袱的一部分，在很多其他的现代语（例如：Rust）中，字符串字面量是右值。
 
-当然，从使用者的角度来看，这二者确实非常相似。但是规范就是需要严格区分不同情况。在[引用初始化](https://zh.cppreference.com/w/cpp/language/reference_initialization)的描述中，可以很明确的看到所有发生临时量实质化的场合都限定在**当引用是到非 volatile 的 const 限定类型的左值引用或右值引用时**，因此字符串字面量显然不属于临时量实质化转换。尽管从使用者的视角来看好像定义这么细没什么用处，但是这些严格的定义会对编译器的行为产生直接影响。
-
-某种意义上来说，这也属于 C++ 历史包袱的一部分，在很多其他的现代语言中，数组字面量和字符串字面量都属于右值（或值表达式）。
-
-最后还要提一下，从字符串字面量隐式转换为字符指针这一行为有一个更大范围上的定义，参考《[C++ International Standard 2020 edtion](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/n4849.pdf)》所述：
+最后还要提一下，从字符串字面量隐式转换为字符指针这一行为有一个更标准的定义，参考《[C++ International Standard 2020 edtion](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/n4849.pdf)》所述：
 
 > Whenever a glvalue appears as an operand of an operator that expects a prvalue for that operand, the lvalue-to-rvalue, array-to-pointer, or function-to-pointer standard conversions are applied to convert the expression to a prvalue.
 >

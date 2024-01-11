@@ -2,14 +2,6 @@
   Post-specific style
 */
 
-@mixin btn-sharing-color($light-color, $important: false) {
-  @if $important {
-    color: var(--btn-share-color, $light-color) !important;
-  } @else {
-    color: var(--btn-share-color, $light-color);
-  }
-}
-
 %btn-post-nav {
   width: 50%;
   position: relative;
@@ -72,11 +64,23 @@ h1 + .post-meta {
     -ms-user-select: none;
     user-select: none;
 
+    %icon-size {
+      font-size: 1.125rem;
+    }
+
     .share-icons {
-      font-size: 1.2rem;
+      display: flex;
+
+      i {
+        color: var(--btn-share-color);
+
+        @extend %icon-size;
+      }
 
       > * {
-        margin-left: 0.25rem;
+        @extend %icon-size;
+
+        margin-left: 0.5rem;
 
         &:hover {
           i {
@@ -86,9 +90,9 @@ h1 + .post-meta {
       }
 
       button {
-        position: relative;
-        bottom: 2px;
         padding: 0;
+        border: none;
+        line-height: inherit;
 
         @extend %cursor-pointer;
       }
@@ -99,35 +103,48 @@ h1 + .post-meta {
 
       .iconfont {
         &.icon-twitter {
-          @include btn-sharing-color(rgba(29, 161, 242, 1));
+          color: rgba(29, 161, 242, 1);
         }
   
         &.icon-facebook {
-          @include btn-sharing-color(rgb(66, 95, 156));
+          color: rgb(66, 95, 156);
         }
   
         &.icon-telegram {
-          @include btn-sharing-color(rgb(39, 159, 217));
+          color: rgb(39, 159, 217);
         }
   
         &.icon-linkedin {
-          @include btn-sharing-color(rgb(0, 119, 181));
+          color: rgb(0, 119, 181);
         }
   
         &.icon-weibo {
-          @include btn-sharing-color(rgb(229, 20, 43));
+          color: rgb(229, 20, 43);
         }
   
         &.icon-13 {
-          @include btn-sharing-color(rgb(1, 187, 10));
+          color: rgb(1, 187, 10);
         }
   
         &.icon-qzone {
-          @include btn-sharing-color(rgb(255, 218, 5));
+          color: rgb(255, 218, 5);
         }
       }
     } /* .share-icons */
   } /* .share-wrapper */
+}
+
+.share-mastodon {
+  /* See: https://github.com/justinribeiro/share-to-mastodon#properties */
+  --wc-stm-font-family: $font-family-base;
+  --wc-stm-dialog-background-color: var(--card-bg);
+  --wc-stm-form-button-border: 1px solid var(--btn-border-color);
+  --wc-stm-form-submit-background-color: var(--sidebar-btn-bg);
+  --wc-stm-form-cancel-background-color: var(--sidebar-btn-bg);
+  --wc-stm-form-button-background-color-hover: #007bff;
+  --wc-stm-form-button-color-hover: white;
+
+  font-size: 1rem;
 }
 
 .post-tags {

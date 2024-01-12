@@ -17,9 +17,13 @@ nihil:
   url: https://nihil.cc/
 
 matklad:
-  name: Aleksey Kladov
+  name: Alex Kladov
   url: https://matklad.github.io/
 
 qualcomm:
   name: Qualcomm Technologies, Inc.
   url: https://www.qualcomm.com/home
+
+withoutboats:
+  name: Without boats, dreams dry up
+  url: https://without.boats/

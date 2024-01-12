@@ -16,7 +16,11 @@
   --filepath-text-color: #cacaca;
 
   .highlighter-rouge .gp {
-    color: #87939d;
+    color: #757575;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 
   /* --- Syntax highlight theme from `rougify style base16.dark` --- */

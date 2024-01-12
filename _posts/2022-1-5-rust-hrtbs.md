@@ -74,9 +74,9 @@ fn do_i32(my_obj: Box<dyn MyTrait<&i32>>) {
 
 那么，在限定使用引用的前提下，还有什么办法能够让它通过编译呢？有，HRTBs。
 
-## 高阶 Trait 边界
+## 高阶 Trait 约束
 
-**高阶 Trait 边界**（**HRTBs**, **Higher-Rank Trait Bounds**），或者又叫**高阶生命周期绑定**，大部分人接触它看到的例子应该都是 `Fn` 作为泛型参数的例子。从未接触过 HRTBs 的看客也无需慌张，如果你能理解这个例子，对于 `Fn` 的例子也可以简单的举一反三。
+**高阶 Trait 约束**（**HRTBs**, **Higher-Rank Trait Bounds**），社区也有人称**高阶生命周期约束**，大部分人接触它看到的例子应该都是 `Fn` 作为泛型参数的例子。从未接触过 HRTBs 的看客也无需慌张，如果你能理解这个例子，对于 `Fn` 的例子也可以简单的举一反三。
 
 在上面的例子中，我们的需求和 Rust 编译器的理解是有出入的。实际上，我们想要的是，`Box<dyn MyTrait<&i32>>`{:.language-rust} 在调用 `do_sth(&num)`{:.language-rust} 时能够主动适配 `&num`{:.language-rust} 的生命周期，而不是让 `&num`{:.language-rust} 来满足自己的生命周期。
 
@@ -86,7 +86,7 @@ fn do_i32(my_obj: Box<dyn MyTrait<&i32>>) {
 Box<dyn for<'a> MyTrait<&'a i32>>
 ```
 
-`for<'a> T<&'a i32>`{:.language-rust} 这个结构，我们可以从字面上理解，将 `for`{:.language-rust} 翻译为“对于”，将该语法解释为“对于所有所选择的生命周期，动态地产生对应的引用”。
+`for<'a> S<&'a T>`{:.language-rust} 这个结构，我们可以从字面上理解，将 `for`{:.language-rust} 翻译为“对于”，将该语法解释为“对于所有所选择的生命周期，动态地产生对应的引用”。
 
 该语法可以解决上述例子中的所有问题：
 

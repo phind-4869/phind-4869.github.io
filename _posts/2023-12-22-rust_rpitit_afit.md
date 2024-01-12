@@ -91,7 +91,51 @@ trait GetClosure: Sized {
 
 从使用上看，RPITIT 和 RPIT 唯一的区别就是它在一个 trait 的定义中，那么为什么 RPITIT 这么晚才稳定呢？
 
-最大的原因在于，RPIT 实际是对某个特定类型的装箱，但是在 trait 中，我们无法决定 RPITIT 具体是对哪个类型的装箱，并且，我们也不能依赖某个具体类型 `impl Trait` 反向推导它是什么类型。因此，Rust 对 RPITIT 的规定是，对于某个特定类型的 `impl Trait`，该 RPITIT 的类型是对某一特定类型的装箱；但是对于不同类型之间，RPITIT 的具体类型可以不同。
+最大的原因在于，RPIT 实际是对某个特定类型的装箱，但是在 trait 中，我们无法决定 RPITIT 具体是对哪个类型的装箱，并且，我们也不能依赖某个具体类型 `impl Trait` 反向推导它是什么类型。因此，Rust 对 RPITIT 的规定是，对于某个特定类型的 `impl Trait`，该 RPITIT 的类型是对某一特定类型的装箱；但是对于不同类型之间，RPITIT 的具体类型可以不同。用例子来说的话就是：
+
+```rust
+trait GetClosure: Sized {
+    type Input;
+    type Output;
+
+    fn get_closure(&self, input: Self::Input) -> impl Fn(Self::Input) -> Self::Output;
+}
+
+struct S1;
+struct S2;
+
+impl GetClosure for S1 {
+    type Input = i32;
+    type Output = i32;
+
+    fn get_closure(&self, input: Self::Input) -> impl Fn(Self::Input) -> Self::Output {
+        move |x| x + input
+        // 由于 RPITIT 对于 S1 而言是一个特定类型的装箱，
+        // 因此下面的代码是无法通过编译的，
+        // 因为它实质返回了两个不同类型的闭包：
+        // if true {
+        //     move |x| x + input
+        // } else {
+        //     move |x| x + input + 1
+        // }
+    }
+}
+
+impl GetClosure for S2 {
+    type Input = String;
+    type Output = String;
+
+    fn get_closure(&self, input: Self::Input) -> impl Fn(Self::Input) -> Self::Output {
+        // 但是，对于 S1 和 S2 这两个不同类型的实现而言，
+        // RPITIT 的装箱类型可以不同，所以这里并不会报错。
+        // 因此，它的行为类似于关联类型或 GAT。
+        move |mut x| {
+            x.push_str(&input);
+            x
+        }
+    }
+}
+```
 
 我们很容易就发现，RPITIT 看起来跟关联类型几乎就是同一回事，而 RPITIT 也支持泛型，因此泛型的 RPITIT 实质跟 GAT 看起来是同一回事。事实上，[根据 RFC 的讲解](https://rust-lang.github.io/rfcs/3425-return-position-impl-trait-in-traits.html)，**RPITIT 确实解糖为关联类型或 GAT**。
 

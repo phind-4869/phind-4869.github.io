@@ -19,6 +19,14 @@
     --inline-code-bg: #fbfafa;
   }
 
+  .highlighter-rouge .gp {
+    color: #757575;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
   /* --- Syntax highlight theme from `rougify style github` --- */
 
   .highlighter-rouge table td {

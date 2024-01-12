@@ -187,7 +187,7 @@ constexpr remove_reference_t<T> &&move(T &&t) noexcept {
 
 回想一下我们使用 `std::invoke` 的根本原因是什么。
 
-大体上来说，C++ 的可调用类型分为**函数（指针）类型**，**成员函数（指针）类型**，以及**重载了 `operator()` 的类型**。其中第一种和第三种都可以简单通过 `f(args...)` 的形式进行调用，而第二种必须以 `t.*f(args...)` 或 `t->*f(args...)` 的形式来调用。而 `std::invoke` 则隐藏了这个细节，将三种可调用类型通过 `std::invoke(f, args...)` 以及 `std::invoke(f, t, args...)` 的形式统一起来。
+大体上来说，C++ 的可调用类型分为**函数（指针）类型**，**成员函数（指针）类型**，以及**重载了 `operator()` 的类型**。其中第一种和第三种都可以简单通过 `f(args...)` 的形式进行调用，而第二种必须以 `(t.*f)(args...)` 或 `(t->*f)(args...)` 的形式来调用。而 `std::invoke` 则隐藏了这个细节，将三种可调用类型通过 `std::invoke(f, args...)` 以及 `std::invoke(f, t, args...)` 的形式统一起来。
 
 现在让我们来看看如何**实现 `invoke`**。
 
@@ -234,7 +234,7 @@ struct callable_tag {
   using type = normal_function;
 };
 
-// 通模板特化来区分成员函数类型
+// 通过模板特化来区分成员函数类型
 template <typename F, typename T>
 struct callable_tag<F T::*> {
   using type = member_function;

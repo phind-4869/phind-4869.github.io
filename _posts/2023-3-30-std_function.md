@@ -194,7 +194,7 @@ class Closure {
 template <typename Ret, typename... Args>
 class Closure<Ret(Args...)> {
  private:
-  // 注意到该函数的类型是 Ret (*)(void*, Args&&...)，并不包含 Lambda 模板类型
+  // 注意到该函数的类型是 Ret (*)(void*, Args...)，并不包含 Lambda 模板类型
   template <typename Lambda>
   static Ret invoke(void* fp, Args... args) {
     // 在函数体内使用 Lambda 模板类型，而不是让函数的调用者提供
@@ -544,7 +544,7 @@ int main() {
 
 Perfect！完美达成了我们的需求
 
-这时候有人要说了，博主你这 `Closure` 没法用在成员函数上啊！啊是的，成员函数指针必须以 `(x.*f)()` 或者 `(x->f)()` 的形式调用，而我们的 `invoke` 函数显然没有对这种情况做特殊处理。不过问题也不大，C++17 之后我们可以使用标准库的 `std::invoke` 来兼容成员函数：
+这时候有人要说了，博主你这 `Closure` 没法用在成员函数上啊！啊是的，成员函数指针必须以 `(x.*f)()` 或者 `(x->*f)()` 的形式调用，而我们的 `invoke` 函数显然没有对这种情况做特殊处理。不过问题也不大，C++17 之后我们可以使用标准库的 `std::invoke` 来兼容成员函数：
 
 ```cpp
 #include <functional>

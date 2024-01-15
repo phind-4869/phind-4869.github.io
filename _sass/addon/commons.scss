@@ -1,6 +1,4 @@
-/*
-  The common styles
-*/
+/* The common styles */
 
 html {
   @media (prefers-color-scheme: light) {
@@ -97,8 +95,6 @@ blockquote {
   background-color: var(--blockquote-background-color);
   border-top-right-radius: 6px;
   border-bottom-right-radius: 6px;
-  display: flex;
-  flex-direction: column;
 
   > p:last-child {
     margin-bottom: 0;

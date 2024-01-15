@@ -155,7 +155,7 @@ pub fn forget_iterator(iter: impl Iterator) {
 
 在具有 `Leak` 的语言中，作用域任务三难困境将不存在，更简单的作用域线程 API 将是安全的，GC 集成可能会更容易，而且我得到的印象是许多系统 API 可以更容易地安全包装（尽管我不知道这个细节）。
 
-在具有 `Move` 的语言中，`Pin` 类型不需要存在，因此用户在处理它时不会有如此烦恼，并且所谓的 “pin projections”（译者注：请参考 [pin 文档](https://doc.rust-lang.org/std/pin/#projections-and-structural-pinning)）不会成为需要宏来解决的问题，并制作自引用生成器（Generator）不会给 `Iterator` trait 带来任何并发症。
+在具有 `Move` 的语言中，`Pin` 类型不需要存在，因此用户在处理它时不会有如此烦恼，并且所谓的 “pin projections”（译者注：请参考 [pin 文档](https://doc.rust-lang.org/std/pin/#projections-and-structural-pinning)）不会成为需要宏来解决的问题，并且制作自引用生成器（Generator）不会给 `Iterator` trait 带来任何并发症。
 
 然而，现在做出这些改变是一个更加棘手的问题。我认为基于 edition 的技术是添加新的、全局相关的标记 trait 的唯一可行的解​​决方案（除了某些独特的例外，例如 `DynSized`，此处未讨论）。我认为有各种各样的理由认为这行不通——实施起来太困难了，实施起来会有太多健全性漏洞，过渡太具有破坏性，实际上完全不可能，因为我错过了一些重要的事情。
 

@@ -32,9 +32,9 @@ license: false
 
 为了支持这一点，您将包含一个名为 `Send` 的标记 trait，它是可以跨线程发送的类型集合。任何可能向另一个线程发送值的 API 都需要包含一个 `Send` 约束，例如：
 
-* `thread::spawn`，它产生一个线程
-* `rayon::join`，它在线程池上运行两个任务
-* `tokio::spawn`，这可能会将此任务移动到执行器的另一个线程
+* `thread::spawn`{:.language-rust}，它产生一个线程
+* `rayon::join`{:.language-rust}，它在线程池上运行两个任务
+* `tokio::spawn`{:.language-rust}，这可能会将此任务移动到执行器的另一个线程
 
 当然，Rust 选择支持无法跨线程发送的类型，因此它有一个 `Send` 约束。但是作为替代方案，Rust 也可以简单地选择所有类型都必须支持跨线程发送，并且所有内部可变性都需要同步。事实上，这个 `Send` trait 是标准库完全强制执行的决策：其他人可以发布一个 "alternative libcore"，它可以在不改变 rustc 的情况下强加这一要求，尽管它与存在于这个世界上的任何 Rust 代码都不兼容。
 
@@ -42,12 +42,12 @@ license: false
 
 假设您希望 Rust 支持一旦地址被看见就无法在不运行其析构函数的情况下失效的类型。这是“不可移动类型”（Immoveable Type）的一种古怪而具体的定义，但它恰好完全适配无栈协程（Stackless Coroutine）和侵入式数据结构（Intrusive Data Structure）的要求。
 
-为了支持这一点，您将包含一个名为 `Move` 的标记 trait，它是可以自由移动的类型集合。不同于 `Send`，`Move` 需要一些语言级支持：我认为实现它的最简单方法是，如果类型不实现 `Move`，则获取其地址的操作将拿走该类型的所有权（因此 `let x = &mut y;` 会拿走 `y` 的所有权，有效地阻止您再次移动它）。而 `Box` 让您可以从中移出的神奇行为（译者注：这里应该指的是 `Box::into_inner`）也同样需要受到 `Move` 约束。
+为了支持这一点，您将包含一个名为 `Move` 的标记 trait，它是可以自由移动的类型集合。不同于 `Send`，`Move` 需要一些语言级支持：我认为实现它的最简单方法是，如果类型不实现 `Move`，则获取其地址的操作将拿走该类型的所有权（因此 `let x = &mut y;`{:.language-rust} 会拿走 `y` 的所有权，有效地阻止您再次移动它）。而 `Box` 让您可以从中移出的神奇行为（译者注：这里应该指的是 `Box::into_inner`{:.language-rust}）也同样需要受到 `Move` 约束。
 
 此外，某些 API 需要受 `Move` 约束，这样您就可以通过引用进行移动，例如：
 
-* `mem::swap` 允许您交换两个可变引用后面的值
-* `mem::replace` 允许您将可变引用后面的值替换为另一个值
+* `mem::swap`{:.language-rust} 允许您交换两个可变引用后面的值
+* `mem::replace`{:.language-rust} 允许您将可变引用后面的值替换为另一个值
 
 你会注意到 Rust 没有 `Move` trait；相反，它使用指针类型的包装器 `Pin` 提供相同的保证。尽管该 `Move` trait 可能是一个更容易使用的 API，但事实证明很难以向后兼容的方式添加它（我稍后会解释原因），相反，在需要这些语义的新接口中只有 `Pin` API 被添加和使用。
 
@@ -59,9 +59,9 @@ license: false
 
 某些 API 必须受 `Leak` 约束：
 
-* 总是泄漏值的 API（`mem::forget`）
-* 让您负责运行析构函数的 API（`ManuallyDrop::new`）
-* 允许循环共享所有权并可能意外泄漏值的 API（`Rc::new`, `Arc::new`）
+* 总是泄漏值的 API（`mem::forget`{:.language-rust}）
+* 让您负责运行析构函数的 API（`ManuallyDrop::new`{:.language-rust}）
+* 允许循环共享所有权并可能意外泄漏值的 API（`Rc::new`{:.language-rust}, `Arc::new`{:.language-rust}）
 
 当然，Rust 不具备这个 `Leak` trait，但它差点就具备了。这个讨论在 2015 年初达到了高潮，当时 Rust 使用的作用域线程 API 被发现不健全，因为它的安全性依赖于它的保护类型永不泄漏。我们决定（有些匆忙，因为 1.0 版本计划在争议发生后的几个月内发布）Rust 不支持不能泄漏的类型，因此不会添加该 `Leak` trait。
 
@@ -80,9 +80,9 @@ license: false
 
 乍一看，添加自动 trait 似乎是向后兼容的更改。您添加了一个新 trait `Leak`，它表示类型可能会泄漏。未实现此 trait 的类型在不运行其析构函数的情况下不能超出作用域。因为今天 Rust 中的所有类型都必然可以被泄漏（这是决定不具有 `Leak` trait 的后果），所以所有类型都可以实现 `Leak`。这是自动 trait 的语义，所以听起来它应该工作得很好。
 
-当您向可用于泄漏值的 API 添加约束时，问题就出现了，例如 `mem::forget`。如果你想让没有实现 `Leak` 的类型不会被泄漏，你需要添加一个约束到 `mem::forget`。但有两种方式不向后兼容。
+当您向可用于泄漏值的 API 添加约束时，问题就出现了，例如 `mem::forget`{:.language-rust}。如果你想让没有实现 `Leak` 的类型不会被泄漏，你需要添加一个约束到 `mem::forget`{:.language-rust}。但有两种方式不向后兼容。
 
-首先，它不适用于泛型。这段代码现在是合法的，但如果您添加一个 `Leak` 绑定就会破坏 `mem::forget`：
+首先，它不适用于泛型。这段代码现在是合法的，但如果您添加一个 `Leak` 绑定就会破坏 `mem::forget`{:.language-rust}：
 
 ```rust
 pub fn forget_generic<T>(value: T) {
@@ -90,7 +90,7 @@ pub fn forget_generic<T>(value: T) {
 }
 ```
 
-这是因为该函数的类型参数没有 `Leak` 约束。将这样的约束添加到 API `mem::forget`（或任何其他可以“忘记”值的 API）将是一个破坏性修改（Breaking Change）。它不向后兼容的另一种方式是 trait 对象类型将不会实现 `Leak`，除非它们添加 `+ Leak`。trait 对象类型不会通过自动 trait 的方式继承实现，因为您实际上并不知道 trait 对象是什么类型。因此像 `dyn Future` 这样的 trait 对象不会实现 `Leak`。例如：
+这是因为该函数的类型参数没有 `Leak` 约束。将这样的约束添加到 API `mem::forget`{:.language-rust}（或任何其他可以“忘记”值的 API）将是一个破坏性修改（Breaking Change）。它不向后兼容的另一种方式是 trait 对象类型将不会实现 `Leak`，除非它们添加 `+ Leak`。trait 对象类型不会通过自动 trait 的方式继承实现，因为您实际上并不知道 trait 对象是什么类型。因此像 `dyn Future`{:.language-rust} 这样的 trait 对象不会实现 `Leak`。例如：
 
 ```rust
 pub fn forget_trait_object(object: Box<dyn Display>) {
@@ -102,7 +102,7 @@ pub fn forget_trait_object(object: Box<dyn Display>) {
 
 因此，如果添加自动 trait 不向后兼容，我们就只能寻求 `?Trait` 解决方案。但这里也存在问题。
 
-从最严格的意义上来说，添加新的 trait `?Leak` 是向后兼容的。您可以放宽其他 API 的约束，而不是像 `mem::forget` 那样向 API 添加新的约束。所以上面的所有代码都可以，因为要创建一个采用线性类型的泛型函数，您必须编写一个 `?Leak` 约束。
+从最严格的意义上来说，添加新的 trait `?Leak` 是向后兼容的。您可以放宽其他 API 的约束，而不是像 `mem::forget`{:.language-rust} 那样向 API 添加新的约束。所以上面的所有代码都可以，因为要创建一个采用线性类型的泛型函数，您必须编写一个 `?Leak` 约束。
 
 对于像 `Leak` 这样的东西来说，第一个问题是 Rust 中的绝大多数通用 API 不可能忘记它们的值；毕竟，尽管内存泄漏不是未定义的行为，但它们仍然是不可取的并且大多数情况下是可以避免的。这与 `Sized` 的情况完全不同：因为按值传递某些内容需要 `Sized`，而 Rust 中的大多数通用 API 都需要 `Sized`，因此 `?Sized` 约束相对较少。相比之下，添加 `?Leak` 会在整个生态系统中造成永久性的伤痕，因为绝大多数泛型都会受到 `T: ?Leak` 约束。
 
@@ -116,7 +116,7 @@ pub fn forget_iterator(iter: impl Iterator) {
 }
 ```
 
-这将忘记迭代器的每个元素，即使从未提及其关联类型 `Iterator::Item`。因此，`Iterator::Item` 必须实现 `Leak`。编译器被允许假设每个迭代器的元素都实现了 `Leak`，并且使该假设无效化将是一个破坏性修改。
+这将忘记迭代器的每个元素，即使从未提及其关联类型 `Iterator::Item`{:.language-rust}。因此，`Iterator::Item`{:.language-rust} 必须实现 `Leak`。编译器被允许假设每个迭代器的元素都实现了 `Leak`，并且使该假设无效化将是一个破坏性修改。
 
 其影响是深远的。如果 `Leak` 作为 `?Trait` 添加，所有这些事情对于线性类型来说都是不可能的：
 

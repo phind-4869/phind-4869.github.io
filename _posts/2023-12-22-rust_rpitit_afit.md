@@ -7,7 +7,7 @@ tags: [rust, 编程语言]     # TAG names should always be lowercase
 
 ## RPIT
 
-在说 RPITIT 和 AFIT 之前，我们需要首先了解 RPIT，即：**Return Position `impl Trait`**。该特性又被称为 **Abstract Return Types**，简单来说，就是允许在函数的返回值类型中使用 `impl Trait` 的形式替代具体类型，例如：
+在说 RPITIT 和 AFIT 之前，我们需要首先了解 RPIT，即：**Return Position `impl Trait`{:.language-rust}**。该特性又被称为 **Abstract Return Types**，简单来说，就是允许在函数的返回值类型中使用 `impl Trait`{:.language-rust} 的形式替代具体类型，例如：
 
 ```rust
 fn test_rpit() -> impl Iterator<Item = i32> {
@@ -78,7 +78,7 @@ fn main() {
 
 ## RPITIT
 
-前置知识已经了解，是时候来说说 RPITIT 了。它的全名叫做 **Return Position `impl Trait` In Traits**，从名字不难看出，它本质是 RPIT 的延伸：允许在 trait 中使用 RPIT。例如：
+前置知识已经了解，是时候来说说 RPITIT 了。它的全名叫做 **Return Position `impl Trait`{:.language-rust} In Traits**，从名字不难看出，它本质是 RPIT 的延伸：允许在 trait 中使用 RPIT。例如：
 
 ```rust
 trait GetClosure: Sized {
@@ -91,7 +91,7 @@ trait GetClosure: Sized {
 
 从使用上看，RPITIT 和 RPIT 唯一的区别就是它在一个 trait 的定义中，那么为什么 RPITIT 这么晚才稳定呢？
 
-最大的原因在于，RPIT 实际是对某个特定类型的装箱，但是在 trait 中，我们无法决定 RPITIT 具体是对哪个类型的装箱，并且，我们也不能依赖某个具体类型 `impl Trait` 反向推导它是什么类型。因此，Rust 对 RPITIT 的规定是，对于某个特定类型的 `impl Trait`，该 RPITIT 的类型是对某一特定类型的装箱；但是对于不同类型之间，RPITIT 的具体类型可以不同。用例子来说的话就是：
+最大的原因在于，RPIT 实际是对某个特定类型的装箱，但是在 trait 中，我们无法决定 RPITIT 具体是对哪个类型的装箱，并且，我们也不能依赖某个具体类型 `impl Trait`{:.language-rust} 反向推导它是什么类型。因此，Rust 对 RPITIT 的规定是，对于某个特定类型的 `impl Trait`{:.language-rust}，该 RPITIT 的类型是对某一特定类型的装箱；但是对于不同类型之间，RPITIT 的具体类型可以不同。用例子来说的话就是：
 
 ```rust
 trait GetClosure: Sized {
@@ -141,7 +141,7 @@ impl GetClosure for S2 {
 
 ## AFIT
 
-在了解 AFIT 之前，我们需要知道 Rust 的 `async fn` 实际上解糖到 RPIT，具体来说：
+在了解 AFIT 之前，我们需要知道 Rust 的 `async fn`{:.language-rust} 实际上解糖到 RPIT，具体来说：
 
 ```rust
 async fn get_one() -> i32 {
@@ -154,7 +154,7 @@ fn get_one() -> impl Future<Output = i32> {
 }
 ```
 
-而 AFIT，即 **`async fn` In Traits**，顾名思义，就是定义在 trait 中的 `async fn`：
+而 AFIT，即 **`async fn`{:.language-rust} In Traits**，顾名思义，就是定义在 trait 中的 `async fn`{:.language-rust}：
 
 ```rust
 trait AsyncTrait {
@@ -162,4 +162,4 @@ trait AsyncTrait {
 }
 ```
 
-由于 `async fn` 解糖到 RPIT，因此，我们很容易就能想到，AFIT 就是解糖到 RPITIT。那么，我们就很容能够理解为什么 AFIT 和 RPITIT 在同一个版本稳定。
+由于 `async fn`{:.language-rust} 解糖到 RPIT，因此，我们很容易就能想到，AFIT 就是解糖到 RPITIT。那么，我们就很容能够理解为什么 AFIT 和 RPITIT 在同一个版本稳定。

@@ -392,9 +392,9 @@ class Closure<Ret(Args...)> {
 ```
 {: highlight-lines="18-22,33" }
 
-但是，停，这里会出现一个很严重的问题。当我们让 `Closure s2 = s1` 时，我们期望它会调用 `Closure(const Closure &)` 这个拷贝构造函数，但实际上 C++ 却会选择 `Closure(Lambda &&fp)` 这个构造函数。这是因为 `Lambda&&` 是一个万能引用，它可以匹配 `Closure &` 使得它比 `const Closure &` 的重载更精确。
+但是，停，这里会出现一个很严重的问题。当我们让 `Closure s2 = s1`{:.language-cpp} 时，我们期望它会调用 `Closure(const Closure &)`{:.language-cpp} 这个拷贝构造函数，但实际上 C++ 却会选择 `Closure(Lambda &&fp)`{:.language-cpp} 这个构造函数。这是因为 `Lambda&&`{:.language-cpp} 是一个万能引用，它可以匹配 `Closure &`{:.language-cpp} 使得它比 `const Closure &`{:.language-cpp} 的重载更精确。
 
-解决这个问题的方法通常是使用 **C++20 的 concept 语法**。但是这并不是说在 C++20 之前我们就无能为力了。由于 C++ 强大的模板推导能力，我们可以借助**模板元编程（Template Metaprogramming）**来解决这个问题，而标准库就专门为此实现了 **`std::enable_if`**。关于模板元编程和 `std::enable_if`，很难用三言两语来讲清楚它们究竟是什么，如果有兴趣，可以移步到[如何在 C++ 中实现柯里化]({{ base.url }}{% link _posts/2023-7-18-cpp_currying.md %})这篇文章。而在本文中，我们只需要知道它可以解决我们的问题就行了：
+解决这个问题的方法通常是使用 **C++20 的 concept 语法**。但是这并不是说在 C++20 之前我们就无能为力了。由于 C++ 强大的模板推导能力，我们可以借助**模板元编程（Template Metaprogramming）**来解决这个问题，而标准库就专门为此实现了 **`std::enable_if`{:.language-cpp}**。关于模板元编程和 `std::enable_if`{:.language-cpp}，很难用三言两语来讲清楚它们究竟是什么，如果有兴趣，可以移步到[如何在 C++ 中实现柯里化]({{ base.url }}{% link _posts/2023-7-18-cpp_currying.md %})这篇文章。而在本文中，我们只需要知道它可以解决我们的问题就行了：
 
 ```cpp
 template <typename T>
@@ -544,7 +544,7 @@ int main() {
 
 Perfect！完美达成了我们的需求
 
-这时候有人要说了，博主你这 `Closure` 没法用在成员函数上啊！啊是的，成员函数指针必须以 `(x.*f)()` 或者 `(x->*f)()` 的形式调用，而我们的 `invoke` 函数显然没有对这种情况做特殊处理。不过问题也不大，C++17 之后我们可以使用标准库的 `std::invoke` 来兼容成员函数：
+这时候有人要说了，博主你这 `Closure` 没法用在成员函数上啊！啊是的，成员函数指针必须以 `(x.*f)()`{:.language-cpp} 或者 `(x->*f)()`{:.language-cpp} 的形式调用，而我们的 `invoke` 函数显然没有对这种情况做特殊处理。不过问题也不大，C++17 之后我们可以使用标准库的 `std::invoke()`{:.language-cpp} 来兼容成员函数：
 
 ```cpp
 #include <functional>
@@ -580,7 +580,7 @@ int main() {
 ```
 {: highlight-lines="10-11" }
 
-至于 `std::invoke` 为什么有这种奇效，则涉及到一定的模板元编程知识，同样可以在[如何在 C++ 中实现柯里化]({{ base.url }}{% link _posts/2023-7-18-cpp_currying.md %})这篇文章中了解一二。
+至于 `std::invoke()`{:.language-cpp} 为什么有这种奇效，则涉及到一定的模板元编程知识，同样可以在[如何在 C++ 中实现柯里化]({{ base.url }}{% link _posts/2023-7-18-cpp_currying.md %})这篇文章中了解一二。
 
 当然，`std::function`{:.language-cpp} 的东西远不止这么点，不过最核心的功能已经在本文中介绍了，剩下那些边角料，有兴趣的话就请自行翻阅源代码吧~
 

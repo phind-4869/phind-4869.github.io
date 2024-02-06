@@ -5,6 +5,9 @@ categories: [教程, Rust]
 tags: [rust, 编程语言]     # TAG names should always be lowercase
 ---
 
+> 由于在 Rust 1.76 发布前夕，trait upcasting coercion 突然发现了[健全性问题](https://github.com/rust-lang/rust/issues/120222)，因此该特性已被取消稳定，目前还没有下一步的稳定计划。
+{: .prompt-warning }
+
 先提出一个问题，在 Rust 中如何把一个 `&dyn MyTrait`{:.language-rust} 转换为 `&MyStruct`{:.language-rust}？
 
 ```rust

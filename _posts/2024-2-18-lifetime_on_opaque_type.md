@@ -214,6 +214,11 @@ fn foo(t: &i32) -> impl Debug + '_ {
 fn foo2(t: &i32) -> impl Debug + '_ {
     unsafe { std::mem::transmute::<&i32, &[u8; 4]>(t) }
 }
+
+fn do_foo() {
+    do_sth(foo);
+    do_sth(foo2);
+}
 ```
 {: highlight-lines="7-9" }
 
@@ -304,4 +309,4 @@ error: `impl Trait` can only mention lifetimes from an fn or impl
   |                       -- lifetime declared here              
 ```
 
-这意味着当前版本的 Rust 并不支持不透明类型从 HRTBs 中捕获生命周期参数。关于此语法的讨论以及为什么不被支持，参见 [rust-lang/rust#96194](https://github.com/rust-lang/rust/issues/96194)。关于此语法未来可能的发展，参见 [rust-lang/rust#104288](https://github.com/rust-lang/rust/issues/104288)。
+这意味着当前版本的 Rust 并不支持不透明类型从 HRTBs 中捕获生命周期参数。关于此语法的讨论以及为什么不被支持，参见 [rust-lang/rust#96194](https://github.com/rust-lang/rust/issues/96194)。关于此语法未来可能的发展，参见 [rust-lang/rust#104288](https://github.com/rust-lang/rust/issues/104288)。需要注意的一点是，从讨论中可以看出，该语法期望解糖为 TAIT，因此，即使该语法最终得到稳定，也很有可能像 TAIT 那样不能视为泛型返回值类型。

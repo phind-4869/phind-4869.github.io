@@ -126,7 +126,7 @@ fn foo(_t: &i32) -> impl Debug + 'static {
 ```rust
 fn do_sth<F>(f: F)
 where
-    for<'a> F: Fn(&'a i32) -> impl Debug + 'a,
+    for<'a> F: Fn(&'a i32) -> (impl Debug + 'a),
 {
     let a = 1;
     f(&a);

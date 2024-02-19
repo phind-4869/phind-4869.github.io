@@ -174,13 +174,11 @@ fn do_foo() {
 
 然而，正如前面所说，类型 `DebugOpaque` 并不是泛型，而是由 `foo` 函数的实际返回值类型推导而来，这也导致了 `DebugOpaque` 被固定推导为了 `&i32`{:.language-rust}，从而令 `do_sth` 函数无法接收返回其他类型的函数作为参数。
 
-所以，我更推荐下面这种方法，更加泛用。
+因此，更推荐使用下面的方法。
 
-## ATB
+## Unboxed Closure
 
-第二种方法是 **ATB（Associated Type Bounds）**，它允许我们**约束关联类型（Associated Types）**。
-
-这种方法同时依赖 **Unboxed Closures** 特性，具体来说，有了这个特性，我们可以**手动脱糖 `Fn` Traits**：
+这种方法依赖 **Unboxed Closures** 特性，具体来说，有了这个特性，我们可以**手动脱糖 `Fn` Traits**：
 
 ```rust
 Fn(A, B, C) -> D
@@ -189,7 +187,41 @@ Fn(A, B, C) -> D
 Fn<(A, B, C), Output = D>
 ```
 
-脱糖后，我们可以将返回值类型的语法 `-> D`{:.language-rust} 换成关联类型的语法 `Output = D`{:.language-rust}。再加上 ATB，我们就可以将返回值类型的约束放在关联类型 `Output` 上：
+脱糖后，我们可以将返回值类型的语法 `-> D`{:.language-rust} 换成关联类型的语法 `Output = D`{:.language-rust}。
+
+使用该特性的好处是，Rust 允许我们为关联类型指定约束而不需要写一个新的泛型类型，这样我们就可以将二者的生命周期关联起来：
+
+```rust
+#![feature(unboxed_closures)]
+
+use std::fmt::Debug;
+
+fn do_sth<F>(f: F)
+where
+    for<'a> F: Fn<(&'a i32,)>,
+    // 需要注意，`Output` 是 `FnOnce` 的关联类型而不是 `Fn` 的
+    for<'a> <F as FnOnce<(&'a i32,)>>::Output: Debug + 'a,
+{
+    let a = 1;
+    f(&a);
+}
+
+fn foo(t: &i32) -> impl Debug + '_ {
+    t
+}
+
+// 这种情况下，`do_sth` 能够接受返回值类型不同的函数作为参数
+fn foo2(t: &i32) -> impl Debug + '_ {
+    unsafe { std::mem::transmute::<&i32, &[u8; 4]>(t) }
+}
+```
+{: highlight-lines="7-9" }
+
+## ATB
+
+最后一种方法是 **ATB（Associated Type Bounds）**，它允许我们**约束关联类型（Associated Types）**。
+
+这种方法是第二种方法的改进版，让我们可以直接在同一行中约束 `Output`，不需要把它单独拆出来约束：
 
 ```rust
 #![feature(associated_type_bounds)]
@@ -209,7 +241,7 @@ fn foo(t: &i32) -> impl Debug + '_ {
     t
 }
 
-// 使用 ATB 的情况下，`do_sth` 能够接受返回值类型不同的函数作为参数
+// 这种情况下，`do_sth` 能够接受返回值类型不同的函数作为参数
 fn foo2(t: &i32) -> impl Debug + '_ {
     unsafe { std::mem::transmute::<&i32, &[u8; 4]>(t) }
 }
@@ -221,4 +253,55 @@ fn do_foo() {
 ```
 {: highlight-lines="8" }
 
-这里 rust 自动为 `Output` 类型添加了 `'a`{:.language-rust} 约束，因此可以不写 `Output: Debug + 'a`{:.language-rust}，当然写了也行，没有区别。
+这里 rust 自动为关联类型 `Output` 添加了 `'a`{:.language-rust} 约束，因此可以不写 `Output: Debug + 'a`{:.language-rust}，当然写了也行，没有区别。
+
+## 后注
+
+需要注意的是，Rust 当前还支持另一种比较相似的语法，即在关联类型处使用**等于号**而不是**冒号**：
+
+```rust
+#![feature(unboxed_closures)]
+
+fn do_sth(f: impl for<'a> Fn<(&'a i32,), Output = impl Debug>)
+{
+    let a = 1;
+    f(&a);
+}
+```
+
+这种写法看起来很美好，但是与使用冒号作为约束不同的是，使用等号令 `Output` 等于一个不透明类型，该不透明类型隐式实现了 HRTBs，大致相当于：
+
+```rust
+#![feature(anonymous_lifetime_in_impl_trait)]
+#![feature(unboxed_closures)]
+
+fn do_sth(f: impl for<'a> Fn<(&'a i32,), Output = impl for<'b> Debug + '_>)
+{
+    let a = 1;
+    f(&a);
+}
+```
+
+这种写法令 `Output` 类型实际并没有与 `'a`{:.language-rust} 产生联系。而若你想要手动添加生命周期标注时：
+
+```rust
+#![feature(unboxed_closures)]
+
+fn do_sth(f: impl for<'a> Fn<(&'a i32,), Output = impl Debug + 'a>)
+{
+    let a = 1;
+    f(&a);
+}
+```
+
+Rust 会说：
+
+```plaintext
+error: `impl Trait` can only mention lifetimes from an fn or impl
+ --> src/lib.rs:5:64
+  |
+5 | fn do_sth(f: impl for<'a> Fn<(&'a i32,), Output = impl Debug + 'a>)
+  |                       -- lifetime declared here              
+```
+
+这意味着当前版本的 Rust 并不支持不透明类型从 HRTBs 中捕获生命周期参数。关于此语法的讨论以及为什么不被支持，参见 [rust-lang/rust#96194](https://github.com/rust-lang/rust/issues/96194)。关于此语法未来可能的发展，参见 [rust-lang/rust#104288](https://github.com/rust-lang/rust/issues/104288)。

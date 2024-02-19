@@ -54,6 +54,9 @@ google_site_verification: # 填入你的认证字符串
 google_analytics:
   id: "G-RK9LRGVP0T" # 填入你的 Google Analytics ID
 
+goatcounter:
+  id: # 填入你的 Goatcounter ID
+
 # 设置首选配色方案
 #
 # 提示: 保留空白会跟随系统的默认首选配色，并且在侧边栏的底部会出现
@@ -64,7 +67,7 @@ google_analytics:
 #     light  - 使用亮色方案
 #     dark   - 使用暗色方案
 #
-theme_mode: # [light|dark]
+theme_mode: # [light | dark]
 
 # 启用动画背景特效
 backgroud_animation: true
@@ -140,7 +143,13 @@ assets:
     env: # [development|production]
 
 pwa:
-  enabled: true # PWA 特性选项
+  enabled: true # PWA 特性选项（可安装）
+  cache:
+    enabled: true # PWA 离线缓存选项
+    # 在此处定义不被 PWA 缓存的路径。
+    # 通常其值是使用和当前网站相同域名的其他网站的 `baseurl`。
+    deny_paths:
+      # - "/example"  # 符合 `<SITE_URL>/example/*` 的 URL 不会被 PWA 缓存
 
 # 每一页的帖子数量
 paginate: 10
@@ -192,10 +201,6 @@ defaults:
     values:
       layout: page
       permalink: /:title/
-  - scope:
-      path: assets/img/favicons
-    values:
-      swcache: true
   - scope:
       path: assets/js/dist
     values:

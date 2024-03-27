@@ -5,7 +5,10 @@
   "prettier.trailingComma": "none",
   // Shopify Liquid
   "files.associations": {
-    "*.html": "liquid"
+    "*.html": "jekyll"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "yzhang.markdown-all-in-one"
   },
   // Formatter
   "[html][liquid]": {

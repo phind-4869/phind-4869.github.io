@@ -46,16 +46,28 @@ social:
     # - https://www.facebook.com/username
     # - https://www.linkedin.com/in/username
 
-google_site_verification: # 填入你的认证字符串
+# 网站认证设置
+webmaster_verifications:
+  google: # 填入你的 Google 认证代码
+  bing: # 填入你的 Bing 认证代码
+  alexa: # 填入你的 Alexa 认证代码
+  yandex: # 填入你的 Yandex 认证代码
+  baidu: # 填入你的百度认证代码
+  facebook: # 填入你的 Facebook 认证代码
 
 # ↑ --------------------------
 # `jekyll-seo-tag` 设置结束
 
-google_analytics:
-  id: # 填入你的 Google Analytics ID
+# 网页分析设置
+analytics:
+  google:
+    id: # 填入你的 Google Analytics ID
+  goatcounter:
+    id: # 填入你的 GoatCounter ID
 
-goatcounter:
-  id: # 填入你的 Goatcounter ID
+# 页面浏览量设置
+pageviews:
+  provider: # 目前仅支持 'goatcounter'
 
 # 设置首选配色方案
 #
@@ -109,8 +121,9 @@ panel:
     toc: true
 
 comments:
-  active: # 帖子评论区全局开关，例如，'disqus'。保持为空表示禁用
-  # active 选项可以是如下：
+  # 帖子评论区全局开关，例如，'disqus'。保持为空表示禁用。
+  provider:
+  # provider 选项可以是如下：
   # disqus 评论系统 > https://disqus.com/
   disqus:
     shortname: # 填入你的 disqus shorname › https://help.disqus.com/en/articles/1717111-what-s-a-shortname
@@ -130,6 +143,7 @@ comments:
     category:
     category_id:
     mapping: # 可选项，默认为 'pathname'
+    strict: # 可选项，默认为 '0'
     input_position: # 可选项，默认为 'bottom'
     lang: # 可选项，默认为 `site.lang` 的值
     reactions_enabled: # 可选项，默认为 1

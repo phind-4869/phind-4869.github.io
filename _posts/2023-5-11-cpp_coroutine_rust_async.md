@@ -231,6 +231,9 @@ impl Wake for EmptyWaker {
 }
 ```
 
+> 有一个[不稳定的特性 `noop_waker`](https://doc.rust-lang.org/std/task/struct.Waker.html#method.noop) 提供此功能。
+{: .prompt-tip }
+
 然后我们来实现 `Task` 类型，其内容并不复杂，无非就是提供一个函数，类似 C++ 中我们给 `task` 重载了 `operator()` 那样，供外部调用以恢复协程并返回 yield 出来的值：
 
 ```rust

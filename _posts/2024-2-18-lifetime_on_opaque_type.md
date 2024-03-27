@@ -226,6 +226,9 @@ fn do_foo() {
 
 最后一种方法是 **ATB（Associated Type Bounds）**，它允许我们**约束关联类型（Associated Types）**。
 
+> `associated_type_bounds` 特性即将在 Rust 1.79.0 稳定。
+{: .prompt-tip }
+
 这种方法是第二种方法的改进版，让我们可以直接在同一行中约束 `Output`，不需要把它单独拆出来约束：
 
 ```rust

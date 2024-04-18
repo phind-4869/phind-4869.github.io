@@ -140,7 +140,7 @@ where
     F: for<U, R> Fn(T, U) -> R,
     T: Copy,
 {
-    move for<U, R> |b: U| -> R f(a, b)  // 当然我们还需要一个泛型闭包的语法
+    move for<U, R> |b: U| -> R { f(a, b) }  // 当然我们还需要一个泛型闭包的语法
 }
 ```
 

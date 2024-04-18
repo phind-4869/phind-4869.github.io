@@ -33,7 +33,7 @@ order: 5
             你他妈的想干嘛就干嘛公共许可证
                 第二版，2004年12月
 
-        版权所有(C) 2021~2023 Nichts Hsu<NichtsVonChaos@gmail.com>
+        版权所有(C) 2021~2024 Nichts Hsu<NichtsVonChaos@gmail.com>
 
         任何人都有复制与发布本协议的原始或修改过的版本的权利。
         若本协议被修改，须修改协议名称。

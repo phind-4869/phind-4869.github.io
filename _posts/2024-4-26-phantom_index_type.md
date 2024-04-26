@@ -213,7 +213,7 @@ fn main() {
 struct Character<const C: char>;
 ```
 
-然后写一个过程宏 [`ident!`](https://docs.rs/stringz/0.1.2/stringz/macro.ident.html)，它将 `ident!(hello)`{:.language-rust} 转换为：
+然后写一个过程宏 [`ident!`](https://docs.rs/stringz/latest/stringz/macro.ident.html)，它将 `ident!(hello)`{:.language-rust} 转换为：
 
 ```rust
 (Character<'h'>, Character<'e'>, Character<'l'>, Character<'l'>, Character<'o'>)
@@ -229,4 +229,4 @@ struct Character<const C: char>;
 let (_, value): (ident!(hello), _) = object.get();
 ```
 
-更具体的实现，可以参考 ["structz"](https://docs.rs/stringz/0.1.2/stringz/) 的源码。
+更具体的实现，可以参考 ["structz"](https://docs.rs/structz/latest/structz/) 的源码。

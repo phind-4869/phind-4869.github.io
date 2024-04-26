@@ -3,7 +3,7 @@ title: "[译] 安全引导与镜像验证技术概览"
 date: 2022-1-19 17:21:27 +0800
 categories: [翻译, "Android"]
 tags: [android, 翻译, 高通]     # TAG names should always be lowercase
-img_path: /assets/img/translate_secure_boot/
+media_subpath: /assets/img/translate_secure_boot/
 image: title.png
 author: qualcomm
 license: false

@@ -3,7 +3,7 @@ title: "记录在 Qt 重写事件时犯的蠢"
 date: 2023-1-13 18:11:05 +0800
 categories: [杂记, Qt]
 tags: [qt, c++, 编程语言]     # TAG names should always be lowercase
-img_path: /assets/img/qt/
+media_subpath: /assets/img/qt/
 ---
 
 前段时间，我想要通过提供选项框的形式来允许用户自定义界面 UI 的字体和大小，就像这样：

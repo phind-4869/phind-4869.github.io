@@ -3,7 +3,7 @@ title: "[C++] 深入了解左值与右值"
 date: 2023-6-28 17:21:02 +0800
 categories: [教程, Cpp]
 tags: [c++, 编程语言, 教程]     # TAG names should always be lowercase
-img_path: /assets/img/lvalue_rvalue
+media_subpath: /assets/img/lvalue_rvalue
 ---
 
 ## C：左值与右值

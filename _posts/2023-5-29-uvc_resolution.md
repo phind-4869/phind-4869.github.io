@@ -3,7 +3,7 @@ title: "抓包查看 UVC 设备选择的分辨率与帧率"
 date: 2023-5-29 13:13:22 +0800
 categories: [教程, USB]
 tags: [usb, 教程, uvc, 抓包]     # TAG names should always be lowercase
-img_path: /assets/img/usb/
+media_subpath: /assets/img/usb/
 ---
 
 **使用工具**: [Bus Hound](https://perisoft.net/bushound/), [USB Device Tree Viewer](https://www.uwe-sieber.de/usbtreeview_e.html)
@@ -24,9 +24,9 @@ img_path: /assets/img/usb/
 
 该 CTL 包以下面的方式解析（注：都是**小端序**，即，先低字节，后高字节）：
 
-| bmRequestType | bRequest | wValue | wIndex | wLength |
-| :-: | :-: | :-: | :-: | :-: | :-: |
-| 0x21 | 0x01 | 0x00 0x02 | 0x01 0x00 | 0x1a 0x00 |
+| bmRequestType | bRequest |  wValue   |  wIndex   |  wLength  |
+| :-----------: | :------: | :-------: | :-------: | :-------: |  |
+|     0x21      |   0x01   | 0x00 0x02 | 0x01 0x00 | 0x1a 0x00 |
 
 1. `bmRequestType` 指示请求的方向（Direction），类型（Type）及接收者（Recipient），`0x21` 代表：Direction = Host to Device, Type = Class, Recipient = Interface。
 2. `bRequest` 指示请求的内容，`0x01` 代表 `SET_CUR`，即 Set Current 的缩写，设置当前属性。

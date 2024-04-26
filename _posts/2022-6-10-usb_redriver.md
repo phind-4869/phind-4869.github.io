@@ -3,7 +3,7 @@ title: "USB redriver: NB7VPQ904M 浅析"
 date: 2022-6-10 15:45:39 +0800
 categories: [杂记, USB]
 tags: [usb, driver, qualcomm]     # TAG names should always be lowercase
-img_path: /assets/img/usb_redriver/
+media_subpath: /assets/img/usb_redriver/
 ---
 
 ## 器件介绍

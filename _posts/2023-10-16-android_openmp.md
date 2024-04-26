@@ -3,7 +3,7 @@ title: "Android.bp 中启用 openmp"
 date: 2023-10-16 17:12:54 +0800
 categories: [教程, Android]
 tags: [c++, android, 教程]     # TAG names should always be lowercase
-img_path: /assets/img/android_openmp/
+media_subpath: /assets/img/android_openmp/
 ---
 
 在找到正确答案之前，我尝试了许多方法，例如:

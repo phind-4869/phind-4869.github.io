@@ -109,7 +109,7 @@ fn _parse_str(wat: &str) -> Result<Vec<u8>> {
 
 在 [r/rust](https://old.reddit.com/r/rust/comments/oh4s2j/blog_post_inline_in_rust/) 中讨论。
 
-现在有一个后续的帖子：[并不总是 iCache](http://nihil.cc/posts/translate_not_always_icache/)
+现在有一个后续的帖子：[并不总是 iCache]({{ site.baseurl }}{% link _posts/2022-2-17-translate_not_always_icache.md %})
 
 > 这个帖子是 [One Hundred Thousand Lines of Rust](https://matklad.github.io/2021/09/05/Rust100k.html) 系列的一部分。
 {: .prompt-info }

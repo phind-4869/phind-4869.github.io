@@ -12,13 +12,13 @@ import {
   runRust
 } from './modules/plugins';
 
-initSidebar();
-initTopbar();
 loadImg();
+toc();
 imgPopup();
+initSidebar();
 initLocaleDatetime();
 initClipboard();
-toc();
+initTopbar();
 basic();
 highlightLines();
 runCpp();

@@ -2,7 +2,9 @@
 
 [![996.icu](https://img.shields.io/badge/link-996.icu-red.svg)](https://996.icu)
 
-与原版 Chirpy 不同的点：
+使用之前请先参考原版 Chirpy 的[使用教程](https://chirpy.cotes.page/posts/getting-started/)。
+
+与原版 Chirpy 不同的点在于：
 
 * 在原版支持的评论系统 [Disqus](https://disqus.com/)，[Utterances](https://utteranc.es/) 和 [Giscus](https://giscus.app/zh-CN) 外，增加对 [Waline](https://waline.js.org/) 评论系统的支持，参见 `_config.yml` 里的 `comments.waline`。
 * 使用[知乎式 404 界面](https://404.life/564.html)，可以返回首页或者返回上一页。

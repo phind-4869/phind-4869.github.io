@@ -45,3 +45,7 @@ platforms:
   #       link: "https://fosstodon.org/"
   #     - label: photog.social
   #       link: "https://photog.social/"
+  #
+  # - type: Bluesky
+  #   icon: "iconfont icon-bluesky"
+  #   link: "https://bsky.app/intent/compose?text=TITLE%20URL"

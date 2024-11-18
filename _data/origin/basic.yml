@@ -20,9 +20,9 @@ mermaid:
 dayjs:
   js:
     common: /assets/lib/dayjs/dayjs.min.js
-    locale: /assets/lib/dayjs/locale/en.min.js
-    relativeTime: /assets/lib/dayjs/plugin/relativeTime.min.js
-    localizedFormat: /assets/lib/dayjs/plugin/localizedFormat.min.js
+    locale: /assets/lib/dayjs/locale/en.js
+    relativeTime: /assets/lib/dayjs/plugin/relativeTime.js
+    localizedFormat: /assets/lib/dayjs/plugin/localizedFormat.js
 
 glightbox:
   css: /assets/lib/glightbox/glightbox.min.css
@@ -58,6 +58,6 @@ waline:
 iconfont:
   css:
     # 此 css 包含以 'icon-' 为前缀的图标，为模板的核心图标，请勿删除。
-    - /assets/lib/iconfont/font_2440352_7u0gpzzgjk5/iconfont.css
+    - /assets/lib/iconfont/font_2440352_5nfkefwgc3q/iconfont.css
     # 添加你的 Iconfont 图标链接
     - /assets/lib/iconfont/font_2451185_mj3aklm9b7o/iconfont.css

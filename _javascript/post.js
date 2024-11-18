@@ -1,24 +1,27 @@
-import { basic, initSidebar, initTopbar } from './modules/layouts';
+import { basic, initTopbar, initSidebar } from './modules/layouts';
+
 import {
   loadImg,
   imgPopup,
   initLocaleDatetime,
   initClipboard,
-  toc,
+  initToc,
+  loadMermaid,
   highlightLines,
   runCpp,
   runJavascript,
   runPython,
   runRust
-} from './modules/plugins';
+} from './modules/components';
 
 loadImg();
-toc();
+initToc();
 imgPopup();
 initSidebar();
 initLocaleDatetime();
 initClipboard();
 initTopbar();
+loadMermaid();
 basic();
 highlightLines();
 runCpp();

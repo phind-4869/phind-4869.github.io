@@ -3,18 +3,20 @@ import {
   loadImg,
   imgPopup,
   initClipboard,
+  loadMermaid,
   highlightLines,
   runCpp,
   runJavascript,
   runPython,
   runRust
-} from './modules/plugins';
+} from './modules/components';
 
 loadImg();
 imgPopup();
 initSidebar();
 initTopbar();
 initClipboard();
+loadMermaid();
 basic();
 highlightLines();
 runCpp();

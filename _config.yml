@@ -24,8 +24,6 @@ description: >- # 由 seo meta 和 atom feed 使用
 # 例如，'https://username.github.io'，注意不要以 '/' 结尾。
 url: "https://nihil.cc"
 
-author: Nichts Hsu # 全名
-
 github:
   username: NichtsHsu # Github 用户名
 
@@ -72,6 +70,8 @@ analytics:
     domain: # 填入你的 Matomo 域名
   cloudflare:
     id: # 填入你的 Cloudflare Web Analytics 令牌
+  fathom:
+    id: # 填入你的 Fathom Site ID
 
 # 页面浏览量设置
 pageviews:
@@ -130,7 +130,7 @@ panel:
 
 comments:
   # 帖子评论区全局开关，例如，'disqus'。保持为空表示禁用。
-  provider:
+  provider: # [disqus | utterances | giscus]
   # provider 选项可以是如下：
   # disqus 评论系统 > https://disqus.com/
   disqus:
@@ -197,9 +197,6 @@ collections:
   tabs:
     output: true
     sort_by: order
-  app:
-    output: true
-    permalink: /:name
 
 defaults:
   - scope:

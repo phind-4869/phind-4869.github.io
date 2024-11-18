@@ -30,3 +30,11 @@
 # - type: bluesky
 #   icon: "iconfont icon-bluesky"
 #   url: "" # 填入你的 Bluesky 主页链接
+#
+# - type: reddit
+#   icon: "iconfont icon-reddit"
+#   url: "" # 填入你的 Reddit 主页链接
+#
+# - type: threads
+#   icon: "iconfont icon-threads-fill"
+#   url: "" # 填入你的 Threads 主页链接

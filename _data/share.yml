@@ -49,3 +49,11 @@ platforms:
   # - type: Bluesky
   #   icon: "iconfont icon-bluesky"
   #   link: "https://bsky.app/intent/compose?text=TITLE%20URL"
+  #
+  # - type: Reddit
+  #   icon: "iconfont icon-bluesky"
+  #   link: "https://www.reddit.com/submit?url=URL&title=TITLE"
+  #
+  # - type: Threads
+  #   icon: "iconfont icon-bluesky"
+  #   link: "https://www.threads.net/intent/post?text=TITLE%20URL"

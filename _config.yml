@@ -13,7 +13,7 @@ timezone: Asia/Shanghai
 
 # jekyll-seo-tag 设置 › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 # --------------------------
-title: Nihil       # 主标题
+title: phind-4869       # 主标题
 
 tagline: Nichts Hsu # 副标题
 
@@ -22,10 +22,10 @@ description: >- # 由 seo meta 和 atom feed 使用
 
 # 填入你的网站的协议和域名.
 # 例如，'https://username.github.io'，注意不要以 '/' 结尾。
-url: "https://nihil.cc"
+url: "https://phind-4869.github.com"
 
 github:
-  username: NichtsHsu # Github 用户名
+  username: phind-4869 # Github 用户名
 
 twitter:
   username: NichtsHsu # 推特用户名
